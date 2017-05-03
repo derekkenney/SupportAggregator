@@ -1,0 +1,24 @@
+{
+	"name": "DataDump",
+	"version": "1.0.0",
+	"description": "Taking data from Cure BD and Ad and dumping it into CS Mongodb",
+	"main": "main.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
+	},
+	"repository": "",
+	"keywords": [
+		"node.js",
+		"eclipse",
+		"nodeclipse"
+		],
+		"author": "Kwami Occansey",
+		"license": "Comcast",
+		"readmeFilename": "README.md",
+		"dependencies": {
+			"datapumps": "^0.5.0",
+			"mssql": "^4.0.1",
+			"node-cron": "^1.1.3",
+			"node-datetime": "^1.0.0"
+		}
+}
