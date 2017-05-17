@@ -1,7 +1,13 @@
 /**
  * 
  */
+function Cure(){
 console.log('This is for Cure');
-var cureImport = require('./dataDumpClass.js');
-var cureDump = new cureImport('Cure', 'csMongodb');
-cureDump.sendLoad();
+};
+
+Cure.prototype.CurePump = function(){
+	var cureImport = require('./dataDumpClass.js');
+	var cureDump = new cureImport('Cure', 'csMongodb');
+	cureDump.sendLoad();
+};
+module.exports = Cure;

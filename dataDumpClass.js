@@ -1,13 +1,15 @@
 /**
- * 
+ *
  */
-var destinationpath;
-var sourcePath, sourceTableName;
+var destinationpath, querysql, sourcePath, sourceTableName, mongoInfo, dbCreds, dbInfo, envConf, collectionName;
 var origination = 2;
 var stack = new Error().stack;
 var ecode = new Error().code;
+var fs = require('fs');
+var toml = require('toml-js');
 
 function dataDumpClass(source, destination){
+
 	this.source = source;
 	this.destination = destination;
 
@@ -15,26 +17,21 @@ function dataDumpClass(source, destination){
 	case 'Cure':
 		getCureConfig()
 		sourceTableName = 'UWOpsTicketTracker';
+		this.sourceTableName = sourceTableName;
 		origination = 1
 		break;
 
 	case 'AD':
-		// TODO read from config file
-		console.log("This is AD");
-		sourcePath='mongodb://127.0.0.1:27017/video';
-		origination = 0
-		console.log('0.b-the '+sourcePath+' and '+destinationpath);
+		// TODO AD config
 
 	}
-	console.log('1-the '+sourcePath+' and '+destinationpath);
 
 	switch (destination.toString().trim()){
 	case 'csMongodb':
-		destinationpath='mongodb://127.0.0.1:27017/restaurants';
-
+		console.log('destinationpath: '+dbCreds);
+		destinationpath = dbCreds;
 	}
 
-	console.log('2-the '+sourcePath+' and '+destinationpath);
 }
 
 //function to set sourcePath for cure
@@ -54,46 +51,55 @@ function getCureConfig(){
 
 }
 
-
-
-
 //Function to send load to the destination
 dataDumpClass.prototype.sendLoad = function(){
+	// Get the environment name from nam_space in cf an return it in a variable
+	function envVar(){
+		console.log("Getting env var");
+		var cfEnv = require("cfenv");
+		console.log("Getting env var- Now get app env");
+		var appEnv = cfEnv.getAppEnv();
+		console.log(appEnv);
+		//appEnv = JSON.parse(appEnv);
+		mongoInfo = appEnv.app;
+		mongoInfo = JSON.stringify(mongoInfo);
+		console.log(mongoInfo);
+		mongoInfo = JSON.parse(mongoInfo);
+		console.log(mongoInfo);
+		mongoInfo = mongoInfo.space_name;
+		console.log('mongoInfo: '+mongoInfo);
+		//return mongoInfo;
+
+		var configdata = fs.readFileSync('config/app.toml');
+		console.log('data: \n'+configdata);
+			configdata = toml.parse(configdata);
+			configdata = configdata[mongoInfo];
+			dbInfo = configdata.uri;
+			collectionName = configdata.collectionName;
+			console.log('parsed the uri: '+dbInfo);
+
+			return dbInfo, collectionName;
+
+	}
+envVar();
+
+
+	console.log('Starting prototype sendload');
+
+	console.log('print dbInfo: '+dbInfo);
 
 	//Create a connection to Mongodb
 	var MongoClient = require('mongodb').MongoClient
 	, format = require('util').format;
-	MongoClient.connect(destinationpath, function(err, db) {
+	MongoClient.connect(dbInfo, function(err, db) {
 		if (err) throw err.stack;
 		console.log("Connected to Mongodb");
 
-		//Switch case to sent the load to the correct loaction. 0 is for AD and 1 for Cure	  
+		//Switch case to sent the load to the correct loaction. 0 is for AD and 1 for Cure
 		switch(origination){
 
 		case 0:
-			console.log('3-the '+sourcePath+' and '+destinationpath);
-			var datapumps = require('datapumps'),
-			Pump = datapumps.Pump,
-			MongodbMixin = datapumps.mixin.MongodbMixin,
-			ExcelWriterMixin = datapumps.mixin.ExcelWriterMixin,
-			pump = new Pump();
-			console.log('MongodbMixin');
-			pump
-			.mixin(MongodbMixin(sourcePath.toString().trim()))
-			.useCollection('restaurants')
-			.from(pump.find({}))
-			.mixin(ExcelWriterMixin())
-			.createWorkbook(destinationpath.toString().trim())
-			.createWorksheet('Restaurants')
-			.process(function(restaurants) {
-				return pump.writeRow([ restaurants.country, restaurants.name, restaurants.Age, restaurants.attribute ]);
-				console.log('After MongodbMixin');
-			})
-			.logErrorsToConsole()
-			.run()
-			.then(function() {
-				console.log("Done writing contacts to file");
-			});
+			//TODO code for AD
 			break;
 
 		case 1:
@@ -102,54 +108,76 @@ dataDumpClass.prototype.sendLoad = function(){
 			var dt = dateTime.create();
 			var presentDate = dt.format('m-d-Y');
 			console.log(presentDate);
-			dt.offsetInDays(-1);
-			var queryBeginDate = dt.format('m-d-Y'); 
-			//dt.offsetInDays(-1);
+			dt.offsetInDays(-15);
+			var queryBeginDate = dt.format('m-d-Y');
+			dt.offsetInDays(14);
 			var queryEndDate = dt.format('m-d-Y');
-			//console.log(queryEndDate);
-			//console.log(queryBeginDate);
+			this.queryEndDate = queryEndDate;
+			this.queryBeginDate = queryBeginDate;
+			console.log(queryEndDate);
+			console.log(queryBeginDate);
 			//queryBeginDate = queryBeginDate.toString();
 			//queryEndDate = queryEndDate.toString();
 
-			//sourceTableName = sourceTableName.toString();
+			querysql="SELECT ID, FO_OwnerUserID,  FO_AckDate, FO_RemedyTicketNo, To_SubmitterName, TO_SubmitterEmail, TO_SubmitterContactNo," +
+"FO_SubmissionDate, FO_Severity, FO_Priority, UD_UserCompanyName, MD_SubmissionEmail, UD_UserLogonEmail," +
+"MD_DefectType, UC_ContactName, UC_ContactEmail, UC_BestTimeToContact, UC_UserContactNo, UC_PermissionToAccess," +
+" ID_Product, ID_TypeOfIssue, ID_OS, ID_Browser, ID_FoundThroghSSR, ID_SRREmail, ID_IssueSummary, MD_SaleAmount, " +
+"ID_StepsToReproduce, ID_Comment, MD_SLA, MD_Status, MD_NotifySLA, MD_Outlier, MD_CustImpact"
++ " from " + this.sourceTableName + " where FO_SubmissionDate between '" + this.queryBeginDate + "' AND '" + this.queryEndDate + "'";
+
 			//sql query
-			var querysql = "SELECT ID, FO_OwnerUserID,  FO_AckDate, FO_RemedyTicketNo, To_SubmitterName, TO_SubmitterEmail, TO_SubmitterContactNo," +
-			"FO_SubmissionDate, FO_Severity, FO_Priority, UD_UserCompanyName, MD_SubmissionEmail, UD_UserLogonEmail," +
-			"MD_DefectType, UC_ContactName, UC_ContactEmail, UC_BestTimeToContact, UC_UserContactNo, UC_PermissionToAccess," +
-			" ID_Product, ID_TypeOfIssue, ID_OS, ID_Browser, ID_FoundThroghSSR, ID_SRREmail, ID_IssueSummary, MD_SaleAmount, " +
-			"ID_StepsToReproduce, ID_Comment, MD_SLA, MD_Status, MD_NotifySLA, MD_Outlier, MD_CustImpact"
-			+ " from " + sourceTableName + " where FO_SubmissionDate between '" + queryBeginDate + "' AND '" + queryEndDate + "'";
+			/*fs = require("fs");
+			var filename = "./config/SQLQuery.txt";
+			try {
+				querysql = fs.readFileSync(filename, 'utf8');
+				//querysql = JSON.stringify(querysql);
+			}
+			catch (err) {
+				config={};
+				console.log('Error getting the query from file config/SQLQuery.txt \n'+err.stack);
+				process.exit();
+			}*/
 			//querysql = querysql.toString();
 			//console.log("query is: "+querysql);
 			var Connection = require('tedious').Connection;
 			var rows = [];
-
-
 			// Creating the SQL connection then call the getSqlData function to grab the data
 			var connection = new Connection(sourcePath);
 			connection.on('connect', function(err) {
 				if (err) throw err.stack;
 				console.log('Connection successful. executing the getSqlData function to query and store the result');
 				getSqlData();
-			}		
+			}
 			);
 			//connection.close();
 
 			var Request = require('tedious').Request;
 
 			function insertIntoMongoDb(){
-				console.log('inserting data into MongDB');
+				console.log('inserting data into MongDB with option');
 				//console.log('rows length: '+rows.lenght);
 
-				db.collection('restaurants').insert(rows, function(err, records) {
-					if (err) throw err.stack;
-					console.log('Successfully added '+rows.length+' records');
-				});
+				var col = db.collection(configdata);
+				var batch = col.initializeUnorderedBulkOp({useLegacyOps: true});
+				var a = 0;
+				console.log("# of rows: "+rows.length);
+				while (a < rows.length){
+
+					console.log('inside while loop. This is the a: '+a+'/n this is the value at a: '+JSON.stringify(rows[a]));
+					batch.insert(rows[a])
+					a++;
+				}
+				batch.execute(function(err, records) {
+						if (err) throw err.stack;
+						console.log('Successfully added '+rows.length+' records');
+					});
+
 
 			}
 
 			function getSqlData() {
-				console.log('Getting data from SQL');
+				console.log('Getting data from SQL:\n'+querysql);
 				request = new Request(querysql,
 						function(err, rowCount, rows) {
 					if (err) {

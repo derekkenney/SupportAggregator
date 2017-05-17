@@ -1,0 +1,22 @@
+#node.js manifest
+applications:
+- name: FirstNode
+  buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git
+  domain: g1.app.cloud.comcast.net
+  host: FirstNode
+  command: node main.js
+  instances: 1
+  memory: 128MB
+  disk_quota: 512MB
+  no-route: true
+  health-check-type: none
+  #env:
+ #   server: "10.54.141.53"
+  #  port: 27017
+   # connection_max: 100
+  #  enabled: true
+   # db: 84746d1c-5414-489c-a36f-6fba01c1e32c
+   # collectionName: tickets
+   # dbServiceName: mongodb
+  services:
+   - mongodb
