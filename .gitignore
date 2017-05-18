@@ -1,4 +1,9 @@
 secret-cure-config.json
 SQLQuery.txt
-app.toml
 test.js
+
+# TOML Configs
+*.app.toml
+
+#folders
+_config

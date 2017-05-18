@@ -27,6 +27,7 @@ function dataDumpClass(source, destination){
 
 	}
 
+//TODO Refactor as a property of a MongoDB repo object. Switch statements are code smells
 	switch (destination.toString().trim()){
 	case 'csMongodb':
 		//console.log('destinationpath: '+dbCreds);
@@ -62,19 +63,13 @@ dataDumpClass.prototype.sendLoad = function(){
 		var appEnv = cfEnv.getAppEnv();
 		//console.log(appEnv);
 		//appEnv = JSON.parse(appEnv);
-		mongoInfo = appEnv.app;
-		mongoInfo = JSON.stringify(mongoInfo);
-		//console.log(mongoInfo);
-		mongoInfo = JSON.parse(mongoInfo);
-		//console.log(mongoInfo);
-		mongoInfo = mongoInfo.space_name;
-		//console.log('mongoInfo: '+mongoInfo);
-		//return mongoInfo;
+		var app = JSON.stringify(appEnv.app);
+		var spaceName = mongoInfo.space_name;
 
 		var configdata = fs.readFileSync('config/app.toml');
 		//onsole.log('data: \n'+configdata);
 		configdata = toml.parse(configdata);
-		configdata = configdata[mongoInfo];
+		configdata = configdata[spaceName];
 		dbInfo = configdata.uri;
 		collectionName = configdata.collectionName;
 		console.log('parsed the uri: ');
@@ -123,12 +118,8 @@ dataDumpClass.prototype.sendLoad = function(){
 			var queryBeginDate = dt.format('m-d-Y');
 			dt.offsetInDays(EndOffSet);
 			var queryEndDate = dt.format('m-d-Y');
-			//this.queryEndDate = queryEndDate;
-			//this.queryBeginDate = queryBeginDate;
 			console.log(queryEndDate);
 			console.log(queryBeginDate);
-			//queryBeginDate = queryBeginDate.toString();
-			//queryEndDate = queryEndDate.toString();
 
 			querysql="SELECT ID, FO_OwnerUserID,  FO_AckDate, FO_RemedyTicketNo, To_SubmitterName, TO_SubmitterEmail, TO_SubmitterContactNo," +
 			"FO_SubmissionDate, FO_Severity, FO_Priority, UD_UserCompanyName, MD_SubmissionEmail, UD_UserLogonEmail," +
@@ -136,21 +127,6 @@ dataDumpClass.prototype.sendLoad = function(){
 			" ID_Product, ID_TypeOfIssue, ID_OS, ID_Browser, ID_FoundThroghSSR, ID_SRREmail, ID_IssueSummary, MD_SaleAmount, " +
 			"ID_StepsToReproduce, ID_Comment, MD_SLA, MD_Status, MD_NotifySLA, MD_Outlier, MD_CustImpact"
 			+ " from " + sourceTableName + " where FO_SubmissionDate between '" + queryBeginDate + "' AND '" + queryEndDate + "'";
-
-			//sql query
-			/*fs = require("fs");
-			var filename = "./config/SQLQuery.txt";
-			try {
-				querysql = fs.readFileSync(filename, 'utf8');
-				//querysql = JSON.stringify(querysql);
-			}
-			catch (err) {
-				config={};
-				console.log('Error getting the query from file config/SQLQuery.txt \n'+err.stack);
-				process.exit();
-			}*/
-			//querysql = querysql.toString();
-			//console.log("query is: "+querysql);
 
 			//Connection to SQL with tedious
 			var Connection = require('tedious').Connection;
