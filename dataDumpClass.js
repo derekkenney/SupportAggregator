@@ -39,8 +39,14 @@ function dataDumpClass(source, destination){
 
 //This function gets the data from app.toml in config folder
 function getConfigdata(){
+	console.log("Reading config data, and parsing into configdata var")
 	var configdata = fs.readFileSync('config/app.toml');
-	//onsole.log('data: \n'+configdata);
+
+	if("undefined" === typeof configdata){
+		console.log("configdata is undefined. Exiting application.")
+		process.exit()
+	}
+
 	configdata = toml.parse(configdata);
 	this.configdata = configdata;
 	return configdata;
@@ -72,29 +78,18 @@ dataDumpClass.prototype.sendLoad = function(){
 	function envVar(){
 		console.log("Getting env var");
 		var cfEnv = require("cfenv");
+
 		console.log("Getting env var- Now get app env");
 		var appEnv = cfEnv.getAppEnv();
-		//console.log(appEnv);
-		//appEnv = JSON.parse(appEnv);
-		var app = JSON.stringify(appEnv.app);
-		var spaceName = mongoInfo.space_name;
 
-		//var configdata = fs.readFileSync('config/app.toml');
-		//onsole.log('data: \n'+configdata);
-<<<<<<< HEAD
-		//envVardata = toml.parse(configdata);
-		envVardata = this.configdata[mongoInfo];
-		console.log('from toml envVardata: '+ envVardata);
-		console.log(cdata);
-		dbInfo = envVardata.uri;
-		collectionName = envVardata.collectionName;
-=======
+		console.log("AppEnv: " + appEnv.app);
+		var app = JSON.stringify(appEnv.app);
+		var spaceName = appEnv.space_name;
+
 		configdata = toml.parse(configdata);
 		configdata = configdata[spaceName];
 		dbInfo = configdata.uri;
 		collectionName = configdata.collectionName;
->>>>>>> refs/remotes/csDataPump/master
-		console.log('parsed the uri: ');
 
 		return dbInfo, collectionName;
 
