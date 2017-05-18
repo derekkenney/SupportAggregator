@@ -1,11 +1,12 @@
 
 
-# FirstNode
+# DataDump
+This application reads data from internal and external database and pump them into your Cloud Foundry database.
 
 
 
 ## Usage
-
+ to use it, update your SQLQuery.txt, Dateoffset.toml, and the app.toml in config folder.
 
 
 ## Developing
