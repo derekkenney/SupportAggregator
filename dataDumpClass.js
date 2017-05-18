@@ -2,6 +2,7 @@
  *
  */
 var destinationpath, querysql, sourcePath, sourceTableName, mongoInfo, dbCreds, dbInfo, envConf, collectionName;
+var BeginOffSet, EndOffSet;
 var origination = 2;
 var stack = new Error().stack;
 var ecode = new Error().code;
@@ -17,7 +18,7 @@ function dataDumpClass(source, destination){
 	case 'Cure':
 		getCureConfig()
 		sourceTableName = 'UWOpsTicketTracker';
-		this.sourceTableName = sourceTableName;
+		//this.sourceTableName = sourceTableName;
 		origination = 1
 		break;
 
@@ -28,7 +29,7 @@ function dataDumpClass(source, destination){
 
 	switch (destination.toString().trim()){
 	case 'csMongodb':
-		console.log('destinationpath: '+dbCreds);
+		//console.log('destinationpath: '+dbCreds);
 		destinationpath = dbCreds;
 	}
 
@@ -59,34 +60,34 @@ dataDumpClass.prototype.sendLoad = function(){
 		var cfEnv = require("cfenv");
 		console.log("Getting env var- Now get app env");
 		var appEnv = cfEnv.getAppEnv();
-		console.log(appEnv);
+		//console.log(appEnv);
 		//appEnv = JSON.parse(appEnv);
 		mongoInfo = appEnv.app;
 		mongoInfo = JSON.stringify(mongoInfo);
-		console.log(mongoInfo);
+		//console.log(mongoInfo);
 		mongoInfo = JSON.parse(mongoInfo);
-		console.log(mongoInfo);
+		//console.log(mongoInfo);
 		mongoInfo = mongoInfo.space_name;
-		console.log('mongoInfo: '+mongoInfo);
+		//console.log('mongoInfo: '+mongoInfo);
 		//return mongoInfo;
 
 		var configdata = fs.readFileSync('config/app.toml');
-		console.log('data: \n'+configdata);
-			configdata = toml.parse(configdata);
-			configdata = configdata[mongoInfo];
-			dbInfo = configdata.uri;
-			collectionName = configdata.collectionName;
-			console.log('parsed the uri: '+dbInfo);
+		//onsole.log('data: \n'+configdata);
+		configdata = toml.parse(configdata);
+		configdata = configdata[mongoInfo];
+		dbInfo = configdata.uri;
+		collectionName = configdata.collectionName;
+		console.log('parsed the uri: ');
 
-			return dbInfo, collectionName;
+		return dbInfo, collectionName;
 
 	}
-envVar();
+	envVar();
 
 
 	console.log('Starting prototype sendload');
 
-	console.log('print dbInfo: '+dbInfo);
+	//console.log('print dbInfo: '+dbInfo);
 
 	//Create a connection to Mongodb
 	var MongoClient = require('mongodb').MongoClient
@@ -104,27 +105,37 @@ envVar();
 
 		case 1:
 			//create two variables for the query to run from the today -2 to today -1
+			var DateOffset = fs.readFileSync('config/Dateoffset.toml');
+			console.log('data: \n'+DateOffset);
+			DateOffset = toml.parse(DateOffset);
+			BeginOffSet = DateOffset.BeginDayOffSet;
+			BeginOffSet = BeginOffSet;
+			EndOffSet = DateOffset.EndDayOffSet;
+			EndOffSet = EndOffSet;
+			console.log('Begin: '+BeginOffSet);
+			console.log('End: '+EndOffSet);
+
 			var dateTime = require('node-datetime');
 			var dt = dateTime.create();
 			var presentDate = dt.format('m-d-Y');
 			console.log(presentDate);
-			dt.offsetInDays(-15);
+			dt.offsetInDays(BeginOffSet);
 			var queryBeginDate = dt.format('m-d-Y');
-			dt.offsetInDays(14);
+			dt.offsetInDays(EndOffSet);
 			var queryEndDate = dt.format('m-d-Y');
-			this.queryEndDate = queryEndDate;
-			this.queryBeginDate = queryBeginDate;
+			//this.queryEndDate = queryEndDate;
+			//this.queryBeginDate = queryBeginDate;
 			console.log(queryEndDate);
 			console.log(queryBeginDate);
 			//queryBeginDate = queryBeginDate.toString();
 			//queryEndDate = queryEndDate.toString();
 
 			querysql="SELECT ID, FO_OwnerUserID,  FO_AckDate, FO_RemedyTicketNo, To_SubmitterName, TO_SubmitterEmail, TO_SubmitterContactNo," +
-"FO_SubmissionDate, FO_Severity, FO_Priority, UD_UserCompanyName, MD_SubmissionEmail, UD_UserLogonEmail," +
-"MD_DefectType, UC_ContactName, UC_ContactEmail, UC_BestTimeToContact, UC_UserContactNo, UC_PermissionToAccess," +
-" ID_Product, ID_TypeOfIssue, ID_OS, ID_Browser, ID_FoundThroghSSR, ID_SRREmail, ID_IssueSummary, MD_SaleAmount, " +
-"ID_StepsToReproduce, ID_Comment, MD_SLA, MD_Status, MD_NotifySLA, MD_Outlier, MD_CustImpact"
-+ " from " + this.sourceTableName + " where FO_SubmissionDate between '" + this.queryBeginDate + "' AND '" + this.queryEndDate + "'";
+			"FO_SubmissionDate, FO_Severity, FO_Priority, UD_UserCompanyName, MD_SubmissionEmail, UD_UserLogonEmail," +
+			"MD_DefectType, UC_ContactName, UC_ContactEmail, UC_BestTimeToContact, UC_UserContactNo, UC_PermissionToAccess," +
+			" ID_Product, ID_TypeOfIssue, ID_OS, ID_Browser, ID_FoundThroghSSR, ID_SRREmail, ID_IssueSummary, MD_SaleAmount, " +
+			"ID_StepsToReproduce, ID_Comment, MD_SLA, MD_Status, MD_NotifySLA, MD_Outlier, MD_CustImpact"
+			+ " from " + sourceTableName + " where FO_SubmissionDate between '" + queryBeginDate + "' AND '" + queryEndDate + "'";
 
 			//sql query
 			/*fs = require("fs");
@@ -140,6 +151,8 @@ envVar();
 			}*/
 			//querysql = querysql.toString();
 			//console.log("query is: "+querysql);
+
+			//Connection to SQL with tedious
 			var Connection = require('tedious').Connection;
 			var rows = [];
 			// Creating the SQL connection then call the getSqlData function to grab the data
@@ -158,30 +171,31 @@ envVar();
 				console.log('inserting data into MongDB with option');
 				//console.log('rows length: '+rows.lenght);
 
-				var col = db.collection(configdata);
+				var col = db.collection(collectionName);
 				var batch = col.initializeUnorderedBulkOp({useLegacyOps: true});
 				var a = 0;
 				console.log("# of rows: "+rows.length);
 				while (a < rows.length){
 
-					console.log('inside while loop. This is the a: '+a+'/n this is the value at a: '+JSON.stringify(rows[a]));
+					//console.log('inside while loop. This is the a: '+a+'/n this is the value at a: '+JSON.stringify(rows[a]));
 					batch.insert(rows[a])
 					a++;
 				}
 				batch.execute(function(err, records) {
-						if (err) throw err.stack;
-						console.log('Successfully added '+rows.length+' records');
-					});
+					if (err) throw err.stack;
+					console.log('Successfully added '+rows.length+' records');
+				});
 
 
 			}
 
+			//function to get SQL data
 			function getSqlData() {
-				console.log('Getting data from SQL:\n'+querysql);
+				//console.log('Getting data from SQL:\n'+querysql);
 				request = new Request(querysql,
 						function(err, rowCount, rows) {
 					if (err) {
-						console.log(err.stack);
+						console.log('error on Getting data from SQL: '+err.stack);
 					} else {
 						//console.log('the result is: '+rows);
 						insertIntoMongoDb();
