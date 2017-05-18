@@ -2,7 +2,7 @@
  *
  */
 var destinationpath, querysql, sourcePath, sourceTableName, mongoInfo, dbCreds, dbInfo, envConf, collectionName;
-var BeginOffSet, EndOffSet;
+var BeginOffSet, EndOffSet, configdata, cdata;
 var origination = 2;
 var stack = new Error().stack;
 var ecode = new Error().code;
@@ -16,10 +16,11 @@ function dataDumpClass(source, destination){
 
 	switch (source.toString().trim()){
 	case 'Cure':
-		getCureConfig()
+		getConfigdata();
+		getCureConfig();
 		sourceTableName = 'UWOpsTicketTracker';
 		//this.sourceTableName = sourceTableName;
-		origination = 1
+		origination = 1;
 		break;
 
 	case 'AD':
@@ -35,14 +36,25 @@ function dataDumpClass(source, destination){
 
 }
 
+//This function gets the data from app.toml in config folder
+function getConfigdata(){
+	var configdata = fs.readFileSync('config/app.toml');
+	//onsole.log('data: \n'+configdata);
+	configdata = toml.parse(configdata);
+	this.configdata = configdata;
+	return configdata;
+}
+
+
 //function to set sourcePath for cure
 function getCureConfig(){
-
-	fs = require("fs");
-	var filename = "./secret-cure-config.json";
+	//fs = require("fs");
+	//var filename = "./secret-cure-config.json";
 	console.log("This is Cure");
 	try {
-		sourcePath = require(filename);
+		var cure = 'cure';
+		sourcePath = this.configdata[cure];
+		console.log(sourcePath);
 	}
 	catch (err) {
 		config={};
@@ -54,6 +66,7 @@ function getCureConfig(){
 
 //Function to send load to the destination
 dataDumpClass.prototype.sendLoad = function(){
+	//getConfigdata();
 	// Get the environment name from nam_space in cf an return it in a variable
 	function envVar(){
 		console.log("Getting env var");
@@ -71,12 +84,14 @@ dataDumpClass.prototype.sendLoad = function(){
 		//console.log('mongoInfo: '+mongoInfo);
 		//return mongoInfo;
 
-		var configdata = fs.readFileSync('config/app.toml');
+		//var configdata = fs.readFileSync('config/app.toml');
 		//onsole.log('data: \n'+configdata);
-		configdata = toml.parse(configdata);
-		configdata = configdata[mongoInfo];
-		dbInfo = configdata.uri;
-		collectionName = configdata.collectionName;
+		//envVardata = toml.parse(configdata);
+		envVardata = this.configdata[mongoInfo];
+		console.log('from toml envVardata: '+ envVardata);
+		console.log(cdata);
+		dbInfo = envVardata.uri;
+		collectionName = envVardata.collectionName;
 		console.log('parsed the uri: ');
 
 		return dbInfo, collectionName;
@@ -105,12 +120,18 @@ dataDumpClass.prototype.sendLoad = function(){
 
 		case 1:
 			//create two variables for the query to run from the today -2 to today -1
-			var DateOffset = fs.readFileSync('config/Dateoffset.toml');
-			console.log('data: \n'+DateOffset);
-			DateOffset = toml.parse(DateOffset);
-			BeginOffSet = DateOffset.BeginDayOffSet;
+			//var DateOffset = fs.readFileSync('config/Dateoffset.toml');
+			//console.log('data: \n'+DateOffset);
+			//DateOffset = toml.parse(DateOffset);
+			var DateOffset = 'DateOffset';
+			var BeginDayOffSet = 'BeginDayOffSet';
+			var EndDayOffSet = 'EndDayOffSet';
+			BeginOffSet = this.configdata[DateOffset];
+			console.log('beginOffset: \n'+BeginOffSet);
+			BeginOffSet = BeginOffSet.BeginDayOffSet;
 			BeginOffSet = BeginOffSet;
-			EndOffSet = DateOffset.EndDayOffSet;
+			EndOffSet = this.configdata[DateOffset];
+			EndOffSet = EndOffSet[EndDayOffSet];
 			EndOffSet = EndOffSet;
 			console.log('Begin: '+BeginOffSet);
 			console.log('End: '+EndOffSet);
