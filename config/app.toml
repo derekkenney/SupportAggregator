@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [qa]
 connection_max = "100"
 enabled = "true"
@@ -55,3 +56,38 @@ EndDayOffSet = 1
 
 #[SQLQuery]
 #query = '"SELECT ID, FO_OwnerUserID,  FO_AckDate, FO_RemedyTicketNo, To_SubmitterName, TO_SubmitterEmail, TO_SubmitterContactNo,FO_SubmissionDate, FO_Severity, FO_Priority, UD_UserCompanyName, MD_SubmissionEmail, UD_UserLogonEmail,MD_DefectType, UC_ContactName, UC_ContactEmail, UC_BestTimeToContact, UC_UserContactNo, UC_PermissionToAccess, ID_Product, ID_TypeOfIssue, ID_OS, ID_Browser, ID_FoundThroghSSR, ID_SRREmail, ID_IssueSummary, MD_SaleAmount, ID_StepsToReproduce, ID_Comment, MD_SLA, #MD_Status, MD_NotifySLA, MD_Outlier, MD_CustImpact from " + this.sourceTableName + " where FO_SubmissionDate between '" + this.queryBeginDate + "' AND '" + this.queryEndDate + "'";'
+=======
+[qa]
+host = "172.24.68.198"
+port = "27017"
+connection_max = "100"
+enabled = "true"
+db = "d995ad7e-c94c-4d90-b35e-d503fe54ab7d"
+collectionName = "tickets"
+dbServiceName = "mongodb"
+username = "fdbfd462-36c5-46d7-a307-c1bc99d074b8"
+password = "3102d704efae26955a01ffa794e5bb46"
+
+[staging]
+connection_max = "5000"
+enabled = "true"
+dbServiceName = "mongodb"
+db = "cure"
+
+[production]
+connection_max = "5000"
+enabled = "true"
+dbServiceName = "mongodb"
+db = "cure"
+
+[local]
+host = "127.0.0.1"
+port = "27017"
+connection_max = "100"
+enabled = "true"
+db = "cure"
+collectionName = "tickets"
+dbServiceName = "mongodb"
+
+[cure]
+>>>>>>> refs/remotes/csDataPump/master
