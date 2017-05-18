@@ -2,72 +2,44 @@
  *
  */
 var destinationpath, querysql, sourcePath, sourceTableName, mongoInfo, dbCreds, dbInfo, envConf, collectionName;
-var BeginOffSet, EndOffSet, envConfigData, cureConfigData, cdata;
+var BeginOffSet, EndOffSet, envConfigData, cureConfigData, cdata, appEnv;
 var origination = 2;
 var stack = new Error().stack;
 var ecode = new Error().code;
 var fs = require('fs');
-var toml = require('toml-js');
+var cureDBRepo = require("./repositories/CureDB.js")
+var cureMongoDbRepo = require("./repositories/CureMongoDB.js")
 
-function dataDumpClass(source, destination){
+
+function CureService(repository){
 
 	this.source = source;
 	this.destination = destination;
 
 	console.log("Initialize the configuration data objects")
-	envConfigData = getConfigData()
-	cureConfigData = getCureConfigData()
 
-	switch (source.toString().trim()){
-	case 'Cure':
-		console.log("In the cure case statement.")
-		getCureConfig();
-		sourceTableName = 'UWOpsTicketTracker';
-		//this.sourceTableName = sourceTableName;
-		origination = 1;
-		break;
+	appEnv = cfEnv.getAppEnv();
+	cureConfigData = getCureConfigurationData();
 
-	case 'AD':
-		// TODO AD config
-
-	}
-
-//TODO Refactor as a property of a MongoDB repo object. Switch statements are code smells
-	switch (destination.toString().trim()){
-	case 'csMongodb':
-		//console.log('destinationpath: '+dbCreds);
-		destinationpath = dbCreds;
-	}
-
-}
-
-//This function gets the data from app.toml in config folder
-function getConfigData(){
-
-	console.log("Reading config data, and parsing into configdata var")
-
-	try {
-		var _configData = fs.readFileSync('config/app.toml');
-
-		if("undefined" === typeof _configData){
-			console.log("configdata is undefined. Exiting application.")
-			process.exit()
-		}
-			return toml.parse(_configData);
-
-	} catch (e) {
-				console.log('There was an error getting the configuration data: ' + err.stack);
-				process.exit()
+	sourceTableName = 'UWOpsTicketTracker';
+	origination = 1;
 	}
 }
 
-function getCureConfigData(){
+
+function getCureConfigurationData(){
 	console.log("Entered getCureConfigData. Reading Cure data from a toml file.");
 
 	try {
-		var _configData = envConfigData['cure']
 
-		console.log("Cure configuration data: " + _configData);
+		if("undefined" === typeof envConfigData){
+			console.log("Environment configuration data is missing. Exiting program.")
+			process.exit()
+		}
+
+		console.log("Cure configuration data: " + envConfigData['cure']);
+
+		return envConfigData['cure']
 	}
 	catch (err) {
 		console.log('There was an error reading the cure configuration data. ' + err.stack);
@@ -75,39 +47,15 @@ function getCureConfigData(){
 	}
 }
 
-function envVar(){
-	console.log("Entered envVar(). Read environment variables from CloudFoundry");
 
-	var cfEnv = require("cfenv");
-	var appEnv = cfEnv.getAppEnv();
 
-	if("undefined" === typeof appEnv || "undefined" === typeof cfEnv){
-		console.log("Couldn't read the CloudFoundry app environment into a var. Exiting program.")
-		process.exit()
-	}
-
-	console.log("Reading the space name from app environment variable")
-	var spaceName = appEnv.space_name;
-
-	cosole.log("Reading config data from toml file.")
-	configdata = toml.parse(configdata);
-	configdata = configdata[spaceName];
-	dbInfo = configdata.uri;
-	collectionName = configdata.collectionName;
-
-	return dbInfo, collectionName;
-
-}
 
 //Function to send load to the destination
 dataDumpClass.prototype.sendLoad = function(){
-
-	envVar();
-
-
 	console.log('Starting prototype sendload');
+	console.log("Verifying that we have the needed cure configuration values")
 
-	//console.log('print dbInfo: '+dbInfo);
+	if(configdata)
 
 	//Create a connection to Mongodb
 	var MongoClient = require('mongodb').MongoClient
