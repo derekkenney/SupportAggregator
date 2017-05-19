@@ -10,8 +10,7 @@ var fs = require('fs');
 var cureDBRepo = require("./repositories/CureDB.js")
 var cureMongoDbRepo = require("./repositories/CureMongoDB.js")
 
-
-function CureService(repository){
+function CureService(){
 
 	this.source = source;
 	this.destination = destination;
@@ -26,32 +25,8 @@ function CureService(repository){
 	}
 }
 
-
-function getCureConfigurationData(){
-	console.log("Entered getCureConfigData. Reading Cure data from a toml file.");
-
-	try {
-
-		if("undefined" === typeof envConfigData){
-			console.log("Environment configuration data is missing. Exiting program.")
-			process.exit()
-		}
-
-		console.log("Cure configuration data: " + envConfigData['cure']);
-
-		return envConfigData['cure']
-	}
-	catch (err) {
-		console.log('There was an error reading the cure configuration data. ' + err.stack);
-		process.exit();
-	}
-}
-
-
-
-
 //Function to send load to the destination
-dataDumpClass.prototype.sendLoad = function(){
+CureService.prototype.SendLoad = function() {
 	console.log('Starting prototype sendload');
 	console.log("Verifying that we have the needed cure configuration values")
 
@@ -174,4 +149,4 @@ dataDumpClass.prototype.sendLoad = function(){
 
 }
 
-module.exports = dataDumpClass;
+module.exports = CureService;

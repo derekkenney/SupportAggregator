@@ -1,21 +1,18 @@
-/**
- *
- */
+
 function Cure(){
 console.log('This is for Cure');
+
+var cureService = require('CureService.js');
+var envConfig = require("./config/EnvironmentConfiguration.js");
+
 };
 
 Cure.prototype.CurePump = function(){
-	var cureService = require('./dataDumpClass.js');
-	var _cfEnv = require("./config/Environment.js");
-
-	//Create a configuration object to be used by the repository class
-	console.log("Getting an environment configuration object.");
-	var envConfig = new EnvironmentConfiguration();
+	//Create a CF configuration object to be used by the MongoDB repository class
+	console.log("Getting a CF environment configuration object.");
 
 	//environment contains the CF env data as well as the mongdb data for the service bound to the CF app.
-	var _cfEnv = envConfig.GetEnvironmentConfigurationData();
-
+	var cfEnv = envConfig.GetEnvironmentConfigurationData();
 	console.log("Created an CF Environment object.");
 
 	//create an instance of a Cure config using the environment config object. Cure config contains

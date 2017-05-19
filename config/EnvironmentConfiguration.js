@@ -63,3 +63,4 @@ EnvironmentConfiguration.prototype.GetEnvironmentConfigurationData = function(){
     return this.environment;
 	}));
 }
+module.exports = EnvironmentConfiguration;
