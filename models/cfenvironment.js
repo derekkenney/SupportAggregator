@@ -1,4 +1,4 @@
-function Environment(){
+function CFEnvironment(){
 
   this.AppName = "";
   this.SpaceName = "";

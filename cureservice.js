@@ -6,24 +6,37 @@ var BeginOffSet, EndOffSet, envConfigData, cureConfigData, cdata, appEnv;
 var origination = 2;
 var stack = new Error().stack;
 var ecode = new Error().code;
-var fs = require('fs');
-var cureDBRepo = require("./repositories/CureDB.js")
-var cureMongoDbRepo = require("./repositories/CureMongoDB.js")
+const fs = require('fs');
+const cureDBRepo = require("./repositories/CureDB.js");
+const cureMongoDbRepo = require("./repositories/CureMongoDB.js");
+const cfEnv = require('cfenv');
+const envConf = require('./config/environmentconfiguration.js');
+const cureConf = require('./config/cureconfiguration.js');
 
 function CureService(){
+	console.log("Entered CureService constructor.")
+	console.log("Initialize objects")
 
-	this.source = source;
-	this.destination = destination;
+	//CF configuration variable
+	var _cfEnv = new cfEnv();
+	appEnv = _cfEnv.getAppEnv();
 
-	console.log("Initialize the configuration data objects")
+	//Cure configuration variable
+	var _cureConfig = new cureConf();
 
-	appEnv = cfEnv.getAppEnv();
-	cureConfigData = getCureConfigurationData();
+	//MongoDB and environment configuration variable
+	var _envConfig = new envConf();
+
+	//create repo objects to be used in the service. pass config objects into constructor
+	var _cureDBRepo = new cureDBRepo(_cureConfig);
+	var _cureMongoDBRepo = new cureMongoDbRepo(_envConfig);
 
 	sourceTableName = 'UWOpsTicketTracker';
 	origination = 1;
 	}
 }
+
+CureService.prototype.GetCureData =
 
 //Function to send load to the destination
 CureService.prototype.SendLoad = function() {

@@ -1,22 +1,25 @@
-var fs = require('fs');
-var concat = require('concat-stream');
-var toml = require('toml');
-var cfEnv = require("cfenv");
-var environment = require("./models/Environment.js")
+const fs = require('fs');
+const concat = require('concat-stream');
+const toml = require('toml');
+const cfEnv = require("cfenv");
+const environment = require("./models/cfenvironment.js");
+var _env, _cfEnv, _config;
 
 //Returns an environment object
 function EnvironmentConfiguration(){
 
   console.log("Entered the EnvironmentConfiguration constructor");
 
-  environment = new Environment();
+  //Environment object for CF env values
+  _env = new environment();
+  _cfEnv = new cfEnv();
 
-  if("undefined" === typeof cfEnv){
+  if("undefined" === typeof _cfEnv){
     console.log("There is no environment object available.")
     process.exit();
   }_
 
-  if("undefined" === typeof environment){
+  if("undefined" === typeof _env){
     console.log("The environment object is null.")\
     process.exit();
   }
@@ -27,9 +30,7 @@ function EnvironmentConfiguration(){
 EnvironmentConfiguration.prototype.GetEnvironmentConfigurationData = function(){
 	console.log("Entered getEnvironmentConfigurationData. Read environment variables from CloudFoundry");
 
-	var _config;
-
-	if("undefined" === typeof appEnv || "undefined" === typeof cfEnv){
+	if("undefined" === typeof cfEnv){
 		console.log("Couldn't read the CloudFoundry app environment into a var. Exiting program.")
 		process.exit()
 	}
@@ -47,20 +48,20 @@ EnvironmentConfiguration.prototype.GetEnvironmentConfigurationData = function(){
 
     console.log("Config object: " + _config);
     console.log("Populating the environment object");
-    console.log("Application name: " + cfEnv.getEnvVar("name"));
-    console.log("Space name: " + cfEnv.getEnvVar("space_name"));
+    console.log("Application name: " + _cfEnv.getEnvVar("name"));
+    console.log("Space name: " + _cfEnv.getEnvVar("space_name"));
 
-    this.environment.AppName = cfEnv.getEnvVar("name");
-    this.environment.SpaceName = cfEnv.getEnvVar("space_name");
-    this.environment.Uri = _config.uri;
-    this.environment.Server = _config.server;
-    this.environment.Port = _config.port;
-    this.environment.UserName = _config.userName;
-    this.environment.Password = _config.password;
-    this.environment.CollectionName = _config.collectionName;
-    this.environment.ServiceName = _config.dbServiceName;
+    _env.AppName = _cfEnv.getEnvVar("name");
+    _env.SpaceName = _cfEnv.getEnvVar("space_name");
+    _env.Uri = _config.uri;
+    _env.Server = _config.server;
+    _env.Port = _config.port;
+    _env.UserName = _config.userName;
+    _env.Password = _config.password;
+    _env.CollectionName = _config.collectionName;
+    _env.ServiceName = _config.dbServiceName;
 
-    return this.environment;
+    return _env;
 	}));
 }
 module.exports = EnvironmentConfiguration;
