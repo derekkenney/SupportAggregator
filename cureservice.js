@@ -12,6 +12,7 @@ const cureMongoDbRepo = require("./repositories/CureMongoDB.js");
 const cfEnv = require('cfenv');
 const envConf = require('./config/environmentconfiguration.js');
 const cureConf = require('./config/cureconfiguration.js');
+var _cureDBRepo, _cureMongoDBRepo;
 
 function CureService(){
 	console.log("Entered CureService constructor.");
@@ -24,14 +25,14 @@ function CureService(){
 	var _envConfig = new envConf();
 
 	//create repo objects to be used in the service. pass config objects into constructor
-	var _cureDBRepo = new cureDBRepo(_cureConfig);
-	var _cureMongoDBRepo = new cureMongoDbRepo(_envConfig);
+	_cureDBRepo = new cureDBRepo(_cureConfig);
+	_cureMongoDBRepo = new cureMongoDbRepo(_envConfig);
 }
 
 CureService.prototype.GetCureData = function() {
 	console.log("Getting Cure data.");
 
-	
+
 }
 
 CureService.SaveCureData = function() {
