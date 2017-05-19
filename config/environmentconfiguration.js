@@ -2,7 +2,7 @@ const fs = require('fs');
 const concat = require('concat-stream');
 const toml = require('toml');
 const cfEnv = require("cfenv");
-const environment = require("./models/cfenvironment.js");
+const environment = require("../models/cfenvironment.js");
 var _env, _cfEnv, _config;
 
 //Returns an environment object
@@ -12,15 +12,14 @@ function EnvironmentConfiguration(){
 
   //Environment object for CF env values
   _env = new environment();
-  _cfEnv = new cfEnv();
 
-  if("undefined" === typeof _cfEnv){
-    console.log("There is no environment object available.")
+  if("undefined" === typeof cfEnv){
+    console.log("There is no environment object available.");
     process.exit();
-  }_
+  }
 
   if("undefined" === typeof _env){
-    console.log("The environment object is null.")\
+    console.log("The environment object is null.");
     process.exit();
   }
 }
@@ -48,11 +47,11 @@ EnvironmentConfiguration.prototype.GetEnvironmentConfigurationData = function(){
 
     console.log("Config object: " + _config);
     console.log("Populating the environment object");
-    console.log("Application name: " + _cfEnv.getEnvVar("name"));
-    console.log("Space name: " + _cfEnv.getEnvVar("space_name"));
+    console.log("Application name: " + cfEnv.getEnvVar("name"));
+    console.log("Space name: " + cfEnv.getEnvVar("space_name"));
 
-    _env.AppName = _cfEnv.getEnvVar("name");
-    _env.SpaceName = _cfEnv.getEnvVar("space_name");
+    _env.AppName = cfEnv.getEnvVar("name");
+    _env.SpaceName = cfEnv.getEnvVar("space_name");
     _env.Uri = _config.uri;
     _env.Server = _config.server;
     _env.Port = _config.port;

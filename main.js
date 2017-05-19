@@ -10,6 +10,7 @@ console.log('#########################################Starting##################
 		);
 var cron = require('node-schedule');
 console.log('Entered the main function.');
+var cureService = require('./cureservice.js');
 var rule = new cron.RecurrenceRule();
 //rule.dayOfWeek = new cron.Range(0, 6, 1);
 //rule.hour = 5;
@@ -17,11 +18,18 @@ rule.minute = new cron.Range(0,59,1);
 
 cron.scheduleJob(rule, function(){
 	console.log('Started Cron job');
-	const cureService = require('./cureservice.js');
-	var _cureService = new cureService;
-	console.log('Starting mainCureDump');
-	mainCureDump.CurePump();
-	console.log('Ending mainCureDump');
+	console.log("Creating a cure service object");
+	var _cureService = new cureService();
+
+	console.log
+	("Calling cure service GetCureData.")
+	var cureData =_cureService.GetCureData();
+
+	if("undefined" === typeof cureData){
+		console.log("There was no Cure data returned. Exiting program.");
+		process.exit();
+	}
+
 });
 
 //cron.scheduleJob(rule);

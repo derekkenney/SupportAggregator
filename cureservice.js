@@ -1,7 +1,7 @@
 /**
  *
  */
-var destinationpath, querysql, sourcePath, sourceTableName, mongoInfo, dbCreds, dbInfo, envConf, collectionName;
+var destinationpath, querysql, sourcePath, sourceTableName, mongoInfo, dbCreds, dbInfo, collectionName;
 var BeginOffSet, EndOffSet, envConfigData, cureConfigData, cdata, appEnv;
 var origination = 2;
 var stack = new Error().stack;
@@ -14,12 +14,8 @@ const envConf = require('./config/environmentconfiguration.js');
 const cureConf = require('./config/cureconfiguration.js');
 
 function CureService(){
-	console.log("Entered CureService constructor.")
-	console.log("Initialize objects")
-
-	//CF configuration variable
-	var _cfEnv = new cfEnv();
-	appEnv = _cfEnv.getAppEnv();
+	console.log("Entered CureService constructor.");
+	console.log("Initialize objects");
 
 	//Cure configuration variable
 	var _cureConfig = new cureConf();
@@ -30,21 +26,19 @@ function CureService(){
 	//create repo objects to be used in the service. pass config objects into constructor
 	var _cureDBRepo = new cureDBRepo(_cureConfig);
 	var _cureMongoDBRepo = new cureMongoDbRepo(_envConfig);
-
-	sourceTableName = 'UWOpsTicketTracker';
-	origination = 1;
-	}
 }
 
-CureService.prototype.GetCureData =
+CureService.prototype.GetCureData = function() {
+	console.log("Getting Cure data.");
 
-//Function to send load to the destination
-CureService.prototype.SendLoad = function() {
-	console.log('Starting prototype sendload');
-	console.log("Verifying that we have the needed cure configuration values")
+	
+}
 
-	if(configdata)
+CureService.SaveCureData = function() {
+	console.log("Saving imported cure data.")
+}
 
+/*
 	//Create a connection to Mongodb
 	var MongoClient = require('mongodb').MongoClient
 	, format = require('util').format;
@@ -161,5 +155,5 @@ CureService.prototype.SendLoad = function() {
 	});
 
 }
-
+*/
 module.exports = CureService;

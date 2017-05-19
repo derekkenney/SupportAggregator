@@ -25,3 +25,5 @@ function Get(){
 		process.exit();
 		}
 }
+
+module.exports = CureRepository;

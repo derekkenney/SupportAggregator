@@ -10,3 +10,5 @@ function CFEnvironment(){
   this.CollectionName = "";
   this.ServiceName = "";
 }
+
+module.exports = CFEnvironment;
