@@ -1,13 +1,29 @@
-var fs = require('fs');
-var concat = require('concat-stream');
-var toml = require('toml');
 var cfEnv = require("cfenv");
-var server, db, port, userName;
+var _data;
 
-function CureConfiguration(){
+function CureConfiguration() {
+  console.log("Entered Cure config constructor");
+  var fs = require('fs');
+  var toml = require('toml-js');
 
-  sourceTableName = 'UWOpsTicketTracker';
-	origination = 1;
+ var data = fs.readFileSync('./config/app.toml', 'utf8');
 
+ if("undefined" === data){
+   console.log("No config data returned");
+   process.exit();
+ }
+
+ var parsed = toml.parse(data);
+
+if("undefined" === typeof parsed){
+  console.log("Couldn't parse the toml file");
+  proces.exit();
+}
+
+this.server = parsed.cure.server;
+this.port = parsed.cure.port;
+this.userName = parsed.cure.userName;
+this.password = parsed.cure.password;
+this.db = parsed.cure.database;
 }
 module.exports = CureConfiguration;

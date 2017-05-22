@@ -1,6 +1,6 @@
 var _config, _24hourQuery;
 var conn = require('tedious').Connection;
-var request = require('tedious').Request;
+const request = require('tedious').Request;
 const TwentyFourHourQuery = require('./cure24hourquery.js');
 var _TwentyFourHourQuery, _conn;
 
@@ -30,13 +30,21 @@ CureRepository.prototype.Get =  function() {
 		var config = {
 			userName: _config.userName,
 			password: _config.password,
-			server: _config.server
+			server: _config.server,
+
+			options: {port: _config.port, dbname: _config.db}
 		};
 
-		_conn = new connection(config);
+		_conn = new conn(config);
 
 		_conn.on('connect', function(err) {
 			//create instance of the sql query object
+			if(err){
+				console.log("An error has occurred making a db connection. " + err);
+				process.exit();
+			}
+
+			console.log("Database connection made");
 			var data = getCureData();
 
 			return data;
@@ -49,35 +57,24 @@ CureRepository.prototype.Get =  function() {
 };
 
 	function getCureData() {
-			request = new Request(_TwentyFourHourQuery,
-					function(err, rowCount, rows) {
+			var _request = new request(_TwentyFourHourQuery.query, function(err, rowCount, rows) {
 						if (err) {
 							console.log('Error getting 24 hour data: ' + err.stack);
 						}
 						else {
 							console.log("Row count: " + rowCount);
 						}
-
-						_conn.close();
 				});
 
 				//Work on request object
-				request.on('row', function(columns) {
+				_request.on('row', function(columns) {
 				 columns.forEach(function(column) {
-					 if (column.value === null) {
-						 console.log('NULL');
-					 } else {
 						 rows.push[column.value];
-					 }
 				 });
 			 });
 
-			 request.on('done', function(rowCount, more) {
-				 console.log(rowCount + ' rows returned');
-			 });
-
 			 // In SQL Server 2000 you may need: connection.execSqlBatch(request);
-			 _conn.execSql(request);
+			 _conn.execSql(_request);
 			}
 
 module.exports = CureRepository;

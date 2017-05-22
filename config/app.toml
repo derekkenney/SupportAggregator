@@ -35,10 +35,8 @@ dbServiceName = "mongodb"
 userName= "csdatapull"
 password= "Comc@stCl0ud"
 server= "172.26.46.176"
-[cure."options"]
 port= "4951"
 database= "UPWARE_REPORTING"
-[cure."debug"]
 packet= "true"
 data= "true"
 payload= "true"
