@@ -76,7 +76,6 @@ CureRepository.prototype.Get =  function() {
 
 		 // In SQL Server 2000 you may need: connection.execSqlBatch(request);
 		 _conn.execSql(_request);
-		 _conn.close();
 		}
 
 module.exports = CureRepository;

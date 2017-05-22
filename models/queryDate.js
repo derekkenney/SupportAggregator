@@ -1,10 +1,11 @@
-const dateTime = require('node-datetime');
-
+var dateFormat = require('dateformat');
+var dateTime = require('node-datetime');
 
 function TodaysDate(){
   console.log("Creating date range object");
-  var dt = dateTime.create();
-  this.today = dt.format('m-d-y');
+  var now = new Date();
+  var yesterday = now.setDate(now.getDate() - 1);
+  this.today = dateFormat(yesterday, "fullDate");
 
   console.log("Today: " + this.today);
 }
