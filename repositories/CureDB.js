@@ -57,6 +57,7 @@ CureRepository.prototype.Get =  function() {
 };
 
 	function getCureData() {
+			var _rows = {};
 			var _request = new request(_TwentyFourHourQuery.query, function(err, rowCount, rows) {
 						if (err) {
 							console.log('Error getting 24 hour data: ' + err.stack);
@@ -66,15 +67,16 @@ CureRepository.prototype.Get =  function() {
 						}
 				});
 
-				//Work on request object
 				_request.on('row', function(columns) {
-				 columns.forEach(function(column) {
-						 rows.push[column.value];
-				 });
-			 });
+		      columns.forEach(function(column) {
+		        console.log(column.metadata.colName + " : " + column.value);
+		      });
+		    });
 
-			 // In SQL Server 2000 you may need: connection.execSqlBatch(request);
-			 _conn.execSql(_request);
-			}
+
+		 // In SQL Server 2000 you may need: connection.execSqlBatch(request);
+		 _conn.execSql(_request);
+		 _conn.close();
+		}
 
 module.exports = CureRepository;
