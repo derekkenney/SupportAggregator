@@ -19,6 +19,7 @@ rule.minute = new cron.Range(0,59,1);
 cron.scheduleJob(rule, function(){
 	console.log('Started Cron job');
 	console.log("Creating a cure service object");
+
 	var _cureService = new cureService();
 
 	console.log
@@ -26,10 +27,14 @@ cron.scheduleJob(rule, function(){
 	var cureData =_cureService.GetCureData();
 
 	if("undefined" === typeof cureData){
-		console.log("There was no Cure data returned. Exiting program.");
-		process.exit();
+		console.log("There was no Cure data returned.");
+	}
+
+	if("undefined" !== typeof cureData){
+		console.log("Saving Cure data to MongoDB");
+		_cureService.SaveCureData(cureData);
 	}
 
 });
 
-//cron.scheduleJob(rule);
+cron.scheduleJob(rule);

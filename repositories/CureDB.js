@@ -2,7 +2,7 @@ var _config, _24hourQuery;
 var conn = require('tedious').Connection;
 var request = require('tedious').Request;
 const TwentyFourHourQuery = require('./cure24hourquery.js');
-var _TwentyFourHourQuery;
+var _TwentyFourHourQuery, _conn;
 
 function CureRepository(config){
 	console.log('Entered the CureRepository constructor');
@@ -16,7 +16,7 @@ function CureRepository(config){
 }
 
 
-function Get() {
+CureRepository.prototype.Get =  function() {
 	try {
 		console.log('Entering getDataFromCure');
 		console.log("Verifying that we have the needed cure configuration values");
@@ -33,7 +33,7 @@ function Get() {
 			server: _config.server
 		};
 
-		var _conn = new connection(config);
+		_conn = new connection(config);
 
 		_conn.on('connect', function(err) {
 			//create instance of the sql query object
@@ -77,7 +77,7 @@ function Get() {
 			 });
 
 			 // In SQL Server 2000 you may need: connection.execSqlBatch(request);
-			 connection.execSql(request);
+			 _conn.execSql(request);
 			}
 
 module.exports = CureRepository;

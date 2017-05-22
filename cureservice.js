@@ -32,10 +32,10 @@ function CureService(){
 CureService.prototype.GetCureData = function() {
 	console.log("Getting Cure data.");
 
-
+	return _cureDBRepo.Get();
 }
 
-CureService.SaveCureData = function() {
+CureService.prototype.SaveCureData = function() {
 	console.log("Saving imported cure data.")
 }
 
