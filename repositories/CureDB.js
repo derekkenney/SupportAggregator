@@ -1,7 +1,8 @@
 var _config, _24hourQuery;
 var conn = require('tedious').Connection;
 var request = require('tedious').Request;
-const 24hourquery = require('./cure24hourquery.js');
+const TwentyFourHourQuery = require('./cure24hourquery.js');
+var _TwentyFourHourQuery;
 
 function CureRepository(config){
 	console.log('Entered the CureRepository constructor');
@@ -10,12 +11,12 @@ function CureRepository(config){
 		console.console.log("Config object is null. Can't create an instance of the CureDB repo.");
 		process.exit();
 	}
-	_24hourQuery = new 24hourquery();
+	_TwentyFourHourQuery = new TwentyFourHourQuery();
 	_config = config;
 }
 
 
-function Get(){
+function Get() {
 	try {
 		console.log('Entering getDataFromCure');
 		console.log("Verifying that we have the needed cure configuration values");
@@ -34,45 +35,49 @@ function Get(){
 
 		var _conn = new connection(config);
 
-		_conn.on('connect', function(err){
+		_conn.on('connect', function(err) {
 			//create instance of the sql query object
-			var query =
 			var data = getCureData();
+
 			return data;
-		})
+		});
 
 	} catch (e) {
 		console.log("An exception has occurred: " + e);
 		process.exit();
-		}
+	}
+};
 
-	function getCureData(){
-
-		//TODO create an instance of the cure query object
-
-			request = new Request(querysql,
+	function getCureData() {
+			request = new Request(_TwentyFourHourQuery,
 					function(err, rowCount, rows) {
-				if (err) {
-					console.log('error on Getting data from SQL: '+err.stack);
-				} else {
-					//console.log('the result is: '+rows);
-					insertIntoMongoDb();
-				}
-			});
-			request.on('row', function(columns) {
-				var row = {};
-				columns.forEach(function(column) {
-					row[column.metadata.colName] = column.value;
+						if (err) {
+							console.log('Error getting 24 hour data: ' + err.stack);
+						}
+						else {
+							console.log("Row count: " + rowCount);
+						}
+
+						_conn.close();
 				});
 
-				rows.push(row);
-			});
+				//Work on request object
+				request.on('row', function(columns) {
+				 columns.forEach(function(column) {
+					 if (column.value === null) {
+						 console.log('NULL');
+					 } else {
+						 rows.push[column.value];
+					 }
+				 });
+			 });
 
-			connection.execSql(request);
-		}
+			 request.on('done', function(rowCount, more) {
+				 console.log(rowCount + ' rows returned');
+			 });
 
-	}
-	}
-}
+			 // In SQL Server 2000 you may need: connection.execSqlBatch(request);
+			 connection.execSql(request);
+			}
 
 module.exports = CureRepository;

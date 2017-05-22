@@ -6,4 +6,4 @@ function TodaysDate(){
   console.log("Todays date object created: " + presentDate);
 }
 
-module.export = TodaysDate;
+module.exports = TodaysDate;

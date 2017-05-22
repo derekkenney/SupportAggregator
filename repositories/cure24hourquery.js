@@ -1,7 +1,7 @@
 const todaysDate = require('../models/todaydate.js');
 var _date;
 
-function CureQueryFor24Hours{
+function Cure24HourQuery() {
   console.log("CureQueryFor24Hours constructor");
 
   _date = new todaysDate();
@@ -10,4 +10,4 @@ function CureQueryFor24Hours{
 
 //Add a property for the query
 
-module.export = CureQueryFor24Hours;
+module.exports = Cure24HourQuery;
