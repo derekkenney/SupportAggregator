@@ -32,7 +32,14 @@ function CureService(){
 CureService.prototype.GetCureData = function() {
 	console.log("Getting Cure data.");
 
-	return _cureDBRepo.Get();
+	var results = _cureDBRepo.Get(function(returnValues) {
+		console.log("Cure DB callback function. The results of the query should be available")
+		console.log(returnValues)
+	});
+
+	if("undefined" !== typeof results){
+		console.log("Results were returned from the repo Get method")
+	}
 }
 
 CureService.prototype.SaveCureData = function() {

@@ -30,6 +30,7 @@ cron.scheduleJob(rule, function(){
 	}
 
 	if("undefined" !== typeof cureData){
+		console.log("Cure data returned by service call");
 		console.log(cureData);
 		console.log("Saving Cure data to MongoDB");
 		_cureService.SaveCureData(cureData);

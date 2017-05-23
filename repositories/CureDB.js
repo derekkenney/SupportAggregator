@@ -16,7 +16,7 @@ function CureRepository(config){
 }
 
 
-CureRepository.prototype.Get = function() {
+CureRepository.prototype.Get = function(callback) {
 		console.log('Entering getDataFromCure');
 		console.log("Verifying that we have the needed cure configuration values");
 		console.log("DB server: " + _config.server);
@@ -40,20 +40,39 @@ CureRepository.prototype.Get = function() {
 			}
 
 			console.log("Creating a new request");
-			const request = new sql.Request()
+		 	const request = new sql.Request()
 			//request.stream = true;
 
 			console.log("Adding query to the request")
-			request.query(_TwentyFourHourQuery.query, (err, result) => {
-					for(var i = 0; i < result.recordsets[0].length; i++){
-						console.log("ID:" + result.recordsets[0][i].ID)
-					}
-			});
+			request.stream = true;
+
+			request.query(_TwentyFourHourQuery.query)
+
+			request.on('done', () => {
+					console.log("Request is done. Closing SQL connection")
+					sql.close()
+					console.log(rows)
+					callback(rows)
+			})
+
+			request.on('row', row => {
+				console.log(row)
+				var rowForInsert = "{ID:'" + row.ID + "', Submission Date:'" + row.FO_SubmissionDate + "', Severity:'" + row.FO_Severity + "', ResolutionDate:'" + row.EndDate + "'}"
+
+				console.log("Row to be inserted: " + rowForInsert)
+				rows.push(rowForInsert)
+			})
+
+			 request.on('error', err => {
+				 console.log("An error occurred executing the query " + err)
+				 callback(err)
+			 })
 		});
 
 		sql.on('error', err => {
     		if(err) {
 					console.log("An error occurred: " + err)
+					process.exit();
 				}
 		})
 }
