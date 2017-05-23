@@ -22,8 +22,7 @@ cron.scheduleJob(rule, function(){
 
 	var _cureService = new cureService();
 
-	console.log
-	("Calling cure service GetCureData.")
+	console.log("Calling cure service GetCureData.")
 	var cureData =_cureService.GetCureData();
 
 	if("undefined" === typeof cureData){
@@ -31,6 +30,7 @@ cron.scheduleJob(rule, function(){
 	}
 
 	if("undefined" !== typeof cureData){
+		console.log(cureData);
 		console.log("Saving Cure data to MongoDB");
 		_cureService.SaveCureData(cureData);
 	}

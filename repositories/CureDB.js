@@ -1,6 +1,6 @@
 var _config, _24hourQuery;
 var conn = require('tedious').Connection;
-const request = require('tedious').Request;
+const sql = require('mssql')
 const TwentyFourHourQuery = require('./cure24hourquery.js');
 var _TwentyFourHourQuery, _conn;
 
@@ -16,8 +16,7 @@ function CureRepository(config){
 }
 
 
-CureRepository.prototype.Get =  function() {
-	try {
+CureRepository.prototype.Get = function() {
 		console.log('Entering getDataFromCure');
 		console.log("Verifying that we have the needed cure configuration values");
 		console.log("DB server: " + _config.server);
@@ -25,57 +24,36 @@ CureRepository.prototype.Get =  function() {
 		console.log("Port: " + _config.port);
 		console.log("Username: " + _config.userName);
 
-		//create the connection to SQL Server
-		//Connection to SQL with tedious
+		var rows = [];
+
 		var config = {
-			userName: _config.userName,
+			user: _config.userName,
 			password: _config.password,
 			server: _config.server,
-
-			options: {port: _config.port, dbname: _config.db}
+			database: _config.db,
+			port: _config.port
 		};
 
-		_conn = new conn(config);
-
-		_conn.on('connect', function(err) {
-			//create instance of the sql query object
+		sql.connect(config, err => {
 			if(err){
-				console.log("An error has occurred making a db connection. " + err);
-				process.exit();
+				console.log("An error occurred connecting to sql server " + err);
 			}
 
-			console.log("Database connection made");
-			var data = getCureData();
+			console.log("Creating a new request");
+			const request = new sql.Request()
+			//request.stream = true;
 
-			return data;
+			console.log("Adding query to the request")
+			request.query(_TwentyFourHourQuery.query, (err, result) => {
+					console.log(result.recordsets.length);
+					console.log(result.recordsets);
+			});
 		});
 
-	} catch (e) {
-		console.log("An exception has occurred: " + e);
-		process.exit();
-	}
-};
-
-	function getCureData() {
-			var _rows = {};
-			var _request = new request(_TwentyFourHourQuery.query, function(err, rowCount, rows) {
-						if (err) {
-							console.log('Error getting 24 hour data: ' + err.stack);
-						}
-						else {
-							console.log("Row count: " + rowCount);
-						}
-				});
-
-				_request.on('row', function(columns) {
-		      columns.forEach(function(column) {
-		        console.log(column.metadata.colName + " : " + column.value);
-		      });
-		    });
-
-
-		 // In SQL Server 2000 you may need: connection.execSqlBatch(request);
-		 _conn.execSql(_request);
-		}
-
+		sql.on('error', err => {
+    		if(err) {
+					console.log("An error occurred: " + err)
+				}
+		})
+}
 module.exports = CureRepository;
