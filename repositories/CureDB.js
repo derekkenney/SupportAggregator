@@ -45,8 +45,9 @@ CureRepository.prototype.Get = function() {
 
 			console.log("Adding query to the request")
 			request.query(_TwentyFourHourQuery.query, (err, result) => {
-					console.log(result.recordsets.length);
-					console.log(result.recordsets);
+					for(var i = 0; i < result.recordsets[0].length; i++){
+						console.log("ID:" + result.recordsets[0][i].ID)
+					}
 			});
 		});
 
