@@ -29,21 +29,28 @@ function CureService(){
 	_cureMongoDBRepo = new cureMongoDbRepo(_envConfig);
 }
 
-CureService.prototype.GetCureData = function() {
+CureService.prototype.GetCureData = function(callback) {
 	console.log("Getting Cure data.");
 
-	var results = _cureDBRepo.Get(function(returnValues) {
+	_cureDBRepo.Get(function(returnValues) {
 		console.log("Cure DB callback function. The results of the query should be available")
 		console.log(returnValues)
-	});
 
-	if("undefined" !== typeof results){
-		console.log("Results were returned from the repo Get method")
-	}
+		callback(returnValues)
+	});
 }
 
-CureService.prototype.SaveCureData = function() {
-	console.log("Saving imported cure data.")
+CureService.prototype.SaveCureData = function(data, callback) {
+
+	if("undefined" === typeof data){
+		console.log("There is no data to be inserted into MongoDB")
+	}
+
+	console.log("Saving Cure data into MongoDB.")
+	console.log("Data:" + data)
+
+	var response = "success" //temp mock until repo is implemented
+	callback(response)
 }
 
 /*

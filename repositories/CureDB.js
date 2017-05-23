@@ -25,7 +25,6 @@ CureRepository.prototype.Get = function(callback) {
 		console.log("Username: " + _config.userName);
 
 		var rows = [];
-
 		var config = {
 			user: _config.userName,
 			password: _config.password,
@@ -37,6 +36,7 @@ CureRepository.prototype.Get = function(callback) {
 		sql.connect(config, err => {
 			if(err){
 				console.log("An error occurred connecting to sql server " + err);
+				return callback(new Error("An error occurred connecting to sql server " + err))
 			}
 
 			console.log("Creating a new request");
@@ -51,21 +51,26 @@ CureRepository.prototype.Get = function(callback) {
 			request.on('done', () => {
 					console.log("Request is done. Closing SQL connection")
 					sql.close()
+
+					//close the JSON array
 					console.log(rows)
 					callback(rows)
 			})
 
 			request.on('row', row => {
 				console.log(row)
-				var rowForInsert = "{ID:'" + row.ID + "', Submission Date:'" + row.FO_SubmissionDate + "', Severity:'" + row.FO_Severity + "', ResolutionDate:'" + row.EndDate + "'}"
+				var rowForInsert = {ID: row.ID,  SubmissionDate: row.FO_SubmissionDate, Severity: row.FO_Severity, ResolutionDate: row.EndDate}
 
-				console.log("Row to be inserted: " + rowForInsert)
-				rows.push(rowForInsert)
+				//Create a JSON object from JS object
+				var json = JSON.stringify(rowForInsert)
+				console.log("Row to be inserted: " + json)
+
+				rows.push(json)
 			})
 
 			 request.on('error', err => {
 				 console.log("An error occurred executing the query " + err)
-				 callback(err)
+				 return callback(new Error("An error occurred executing the query " + err))
 			 })
 		});
 

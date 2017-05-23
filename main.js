@@ -23,19 +23,20 @@ cron.scheduleJob(rule, function(){
 	var _cureService = new cureService();
 
 	console.log("Calling cure service GetCureData.")
-	var cureData =_cureService.GetCureData();
+	_cureService.GetCureData(function(result){
 
-	if("undefined" === typeof cureData){
-		console.log("There was no Cure data returned.");
-	}
-
-	if("undefined" !== typeof cureData){
+	if("undefined" !== typeof result){
 		console.log("Cure data returned by service call");
-		console.log(cureData);
+		console.log(result);
 		console.log("Saving Cure data to MongoDB");
-		_cureService.SaveCureData(cureData);
-	}
 
+		_cureService.SaveCureData(result, function(response){
+		console.log("Mongo response:" + response)
+
+		process.exit();
+		})
+	}
+ });
 });
 
 cron.scheduleJob(rule);
