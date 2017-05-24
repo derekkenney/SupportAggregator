@@ -47,7 +47,7 @@ function EnvironmentConfiguration(){
     this.userName = parsed.qa.userName;
     this.password = parsed.qa.password;
     this.collectionName = parsed.qa.collectionName;
-    this.erviceName = parsed.qa.dbServiceName;
+    this.serviceName = parsed.qa.dbServiceName;
 
   };
 module.exports = EnvironmentConfiguration;

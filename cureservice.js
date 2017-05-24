@@ -47,20 +47,20 @@ CureService.prototype.GetCureData = function(callback) {
 //from the main file.
 CureService.prototype.SaveCureData = function(cureData, callback) {
 
-	if("undefined" === typeof cureData){
-		console.log("There is no data to be inserted into MongoDB")
-	}
-
-	console.log("Saving Cure data into MongoDB")
-	//call insert function of mongorepo
-	_cureMongoDBRepo.InsertDocuments(cureData, function(err,response){
-
-		if(err){
-			callback(err);
+	try {
+		if("undefined" === typeof cureData){
+			console.log("There is no data to be inserted into MongoDB")
+			process.exit();
 		}
 
-		//pass the result returned from the repo to the callback function
-		callback(response)
-	})
+		console.log("Saving Cure data into MongoDB")
+		//call insert function of mongorepo
+		_cureMongoDBRepo.InsertDocuments(cureData, function(result){
+			//pass the result returned from the repo to the callback function
+			callback(result)
+		})
+	} catch (e) {
+			console.log("Cure Service: An error occurred " + e);
+	}
 }
 module.exports = CureService;

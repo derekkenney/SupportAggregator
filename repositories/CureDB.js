@@ -50,16 +50,14 @@ CureRepository.prototype.Get = function(callback) {
 			request.on('done', () => {
 					console.log("Request is done. Closing SQL connection")
 					sql.close()
+					console.log("rows: " + rows)
 					callback(rows)
 			})
 
 			request.on('row', row => {
-				console.log(row)
-				var rowForInsert = {ID: row.ID,  SubmissionDate: row.FO_SubmissionDate, Severity: row.FO_Severity, ResolutionDate: row.EndDate}
-
+				var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate}
 				//Create a JSON object from JS object
-				var json = JSON.stringify(rowForInsert)
-				console.log("Row to be inserted: " + json)
+				var json = rowForInsert
 
 				rows.push(json)
 			})

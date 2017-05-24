@@ -1,8 +1,9 @@
 var _config
 var collection
+var assert = require('assert')
 
 function CureMongoDBRepository(config){
-  console.log('Entered the MongoDBRepository constructor');
+  		console.log('\n#########################################MongoDB#################################################\n')
 
   //Get a local instance of the config object to use for the Mongo connection
   if("undefined" === typeof config){
@@ -15,6 +16,8 @@ function CureMongoDBRepository(config){
 
 //Returns a db object for accessing collection
 CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
+  console.log('\n#########################################Inserting Documents#################################################\n')
+
   //get the collection
   console.log("Collection name: " + _config.collectionName)
 
@@ -24,16 +27,11 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
   }
 
   //create instance of connection object
-  var mongoClient = require('mongodb').MongoClient,
-  assert = require('assert')
+  var mongoClient = require('mongodb').MongoClient
 
   //Make connection to mongod
-  mongoclient.connect(_config.Uri, function(err, db){
+  mongoClient.connect(_config.uri, function(err, db){
     console.log("Connected to MongoDB server")
-
-    if(err){
-      callback(err)
-    }
 
     if("undefined" === typeof data){
       console.log("There are no documents to insert")
@@ -41,35 +39,29 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
     }
 
     //call the insertDocuments function
-    insertDocuments(db, data, function(err, result){
+    insertDocuments(db, data, function(result){
       console.log("Closing connection to Mongo server")
       db.close();
-
-      if(err){
-        callback(err)
-      }
-
-      callback(result);
+      callback(result)
     })
   })
-
 }
 
 //a function with a callback has its own logic, as well as calling the logic in the
 //callback
 var insertDocuments = function(db, data, callback){
-    //get the collectionName
-    var collection = db.collection(_config.collectionName)
+    try {
+      //insert into the collection
+      //get the collectionName
+      var collection = db.collection(_config.collectionName);
+      collection.insert(data, {ordered:false})
+      console.log("Inserted documents: " + data);
 
-    //insert into the collection
-    collection.InsertMany(data, function(err, result){
-      if(err){
-        callback(err)
-      }
+      callback("success");
 
-      console.log("Inserted " + result.result.n + " documents")
-      callback(result)
-    })
-}
-
+    } catch (e) {
+      console.log("Repo: An error occurred " + e);
+      process.exit();
+    }
+  }
 module.exports = CureMongoDBRepository;

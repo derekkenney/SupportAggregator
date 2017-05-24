@@ -35,12 +35,7 @@ cron.scheduleJob(rule, function(){
 		console.log(cureData + "\n");
 		console.log('#########################################SAVING#################################################\n')
 
-		_cureService.SaveCureData(cureData, function(err, response){
-			if(err){
-				console.log("An error occurred saving Cure data to MongoDB: " + err)
-				process.exit()
-			}
-
+		_cureService.SaveCureData(cureData, function(result){
 			console.log("Mongo response:" + result)
 			process.exit();
 		})
