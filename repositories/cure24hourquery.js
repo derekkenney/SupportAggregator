@@ -2,7 +2,7 @@ const queryDate = require('../models/queryDate.js');
 const stringify = require('node-stringify');
 var origination;
 
-
+//TODO Replace this class with a proc once I have access to do so in SQL Server
 function Cure24HourQuery() {
   console.log("CureQueryFor24Hours constructor");
 

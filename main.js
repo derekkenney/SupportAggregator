@@ -23,19 +23,27 @@ cron.scheduleJob(rule, function(){
 	var _cureService = new cureService();
 
 	console.log("Calling cure service GetCureData.")
-	_cureService.GetCureData(function(result){
+	_cureService.GetCureData(function(cureData){
+		console.log("Inside GetCureData callback function");
 
-	if("undefined" !== typeof result){
+		if("undefined" === typeof cureData){
+			console.log("No records returned from Cure query. Exiting process");
+			process.exit();
+		}
+
 		console.log("Cure data returned by service call");
-		console.log(result);
-		console.log("Saving Cure data to MongoDB");
+		console.log(cureData + "\n");
+		console.log('#########################################SAVING#################################################\n')
 
-		_cureService.SaveCureData(result, function(response){
-		console.log("Mongo response:" + response)
+		_cureService.SaveCureData(cureData, function(err, response){
+			if(err){
+				console.log("An error occurred saving Cure data to MongoDB: " + err)
+				process.exit()
+			}
 
-		process.exit();
+			console.log("Mongo response:" + result)
+			process.exit();
 		})
-	}
  });
 });
 

@@ -1,14 +1,14 @@
 #node.js manifest
 applications:
-- name: FirstNode
+- name: CureDataPump
   buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git
-  domain: g1.app.cloud.comcast.net
-  host: FirstNode
+  domain: g3.app.cloud.comcast.net
+  host: CureDataPump
   command: node main.js
   instances: 1
   memory: 128MB
   disk_quota: 512MB
-  no-route: true
+  no-route: false
   health-check-type: none
   #env:
  #   server: "10.54.141.53"

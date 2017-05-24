@@ -15,7 +15,6 @@ function CureRepository(config){
 	_config = config;
 }
 
-
 CureRepository.prototype.Get = function(callback) {
 		console.log('Entering getDataFromCure');
 		console.log("Verifying that we have the needed cure configuration values");
@@ -51,9 +50,6 @@ CureRepository.prototype.Get = function(callback) {
 			request.on('done', () => {
 					console.log("Request is done. Closing SQL connection")
 					sql.close()
-
-					//close the JSON array
-					console.log(rows)
 					callback(rows)
 			})
 
