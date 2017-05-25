@@ -1,6 +1,7 @@
 var _config
 var collection
 var assert = require('assert')
+var async = require("async");
 
 function CureMongoDBRepository(config){
   		console.log('\n#########################################MongoDB#################################################\n')
@@ -41,7 +42,6 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
     //call the insertDocuments function
     insertDocuments(db, data, function(result){
       console.log("Closing connection to Mongo server")
-      db.close();
       callback(result)
     })
   })
@@ -49,22 +49,44 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
 
 //a function with a callback has its own logic, as well as calling the logic in the
 //callback
-var insertDocuments = function(db, data, callback){
+var insertDocuments = function(db, data, callbackExternal){
     try {
       //insert into the collection
       //get the collectionName
+
+      if("undefined" === typeof db){
+        console.log("The db object is null")
+        process.exit();
+      }
+
       var collection = db.collection(_config.collectionName);
-      collection.createIndex({CureID : 1});
 
-      //for loop on the data object to look for the existence of each CureID
-      for(i = 0; i < data.length; i++){
-          console.log("Data to be upserted " + data[i].CureID);
-          collection.update({CureID:data[i].CureID}, {CureID : data[i].CureID, SubmissionDate : data[i].SubmissionDate, Severity : data[i].Severity, ResolutionDate : data[i].ResolutionDate}, { upsert: true });
-        }
+      //callback is a default callback of the async each function. Not to be confused with your own callback
+      async.each(data, function(item, callback){
+        console.log("Data to be upserted " + item.CureID);
 
-      console.log("Inserted documents: " + data.length);
-      callback("success");
+        var dateTime = require('node-datetime');
+        var dt = dateTime.create();
+        var formatted = dt.format('Y-m-d H:M:S');
 
+        collection.createIndex({CureID : 1});
+
+        collection.update({CureID: item.CureID},
+          {CureID: item.CureID, SubmissionDate : item.SubmissionDate, Severity : item.Severity, ResolutionDate : item.ResolutionDate, TimeStamp : formatted},
+          { upsert: true },
+          function(err, doc){
+            if(err){
+              console.log("An error occurred inserting doc");
+            }
+            else{
+                console.log("Record upserted")
+                callback();
+            }
+          }
+        );
+      }, function(err){
+            callbackExternal("success")
+        });
     } catch (e) {
       console.log("Repo: An error occurred " + e);
       process.exit();

@@ -55,10 +55,6 @@ CureRepository.prototype.Get = function(callback) {
 			})
 
 			request.on('row', row => {
-				var dateTime = require('node-datetime');
-				var dt = dateTime.create();
-				var formatted = dt.format('Y-m-d H:M:S');
-
 				var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate}
 				//Create a JSON object from JS object
 				var json = rowForInsert

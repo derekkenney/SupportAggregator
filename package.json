@@ -16,6 +16,7 @@
   "license": "Comcast",
   "readmeFilename": "README.md",
   "dependencies": {
+    "async": "^2.4.1",
     "datapumps": "^0.5.0",
     "mongodb": "^2.2.27",
     "mssql": "^4.0.1",
