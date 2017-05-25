@@ -12,8 +12,8 @@ var cron = require('node-schedule');
 console.log('Entered the main function.');
 var cureService = require('./cureservice.js');
 var rule = new cron.RecurrenceRule();
-//rule.dayOfWeek = new cron.Range(0, 6, 1);
-//rule.hour = 5;
+rule.dayOfWeek = new cron.Range(0, 6, 1);
+rule.hour = 5;
 rule.minute = new cron.Range(0,59,1);
 
 cron.scheduleJob(rule, function(){
