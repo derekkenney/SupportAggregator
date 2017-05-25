@@ -54,9 +54,15 @@ var insertDocuments = function(db, data, callback){
       //insert into the collection
       //get the collectionName
       var collection = db.collection(_config.collectionName);
-      collection.insert(data, {ordered:false})
-      console.log("Inserted documents: " + data);
+      collection.createIndex({CureID : 1});
 
+      //for loop on the data object to look for the existence of each CureID
+      for(i = 0; i < data.length; i++){
+          console.log("Data to be upserted " + data[i].CureID);
+          collection.update({CureID:data[i].CureID}, {CureID : data[i].CureID, SubmissionDate : data[i].SubmissionDate, Severity : data[i].Severity, ResolutionDate : data[i].ResolutionDate}, { upsert: true });
+        }
+
+      console.log("Inserted documents: " + data.length);
       callback("success");
 
     } catch (e) {
