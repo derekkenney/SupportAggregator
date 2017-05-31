@@ -1,22 +1,51 @@
 
-console.log('Entered the main function.');
+console.log('Starting server');
+var http = require('http');
 var cureService = require('./cureservice.js');
 var _cureService = new cureService();
+var express = require('express');
+var app = express();
 
-_cureService.GetCureData(function(cureData){
-	console.log("Inside GetCureData callback function");
+app.listen(8080, function(){
+	console.log("Cure data API listening on 3000");
+})
 
-	if("undefined" === typeof cureData){
-		console.log("No records returned from Cure query. Exiting process");
-		process.exit();
-	}
+//Routes
+//Default
+app.get('/', function(req, res){
+	res.send('index');
+})
 
-	console.log("Cure data returned by service call");
-	console.log(cureData + "\n");
-	console.log('#########################################SAVING#################################################\n')
+//Gets the cure data for the previous day
+app.get('/cure/yesterday', function(req, res, next){
+	console.log("Route for GET making call to service layer for date " + req.params.date);
+	next()
+}, function(req, res, next){
 
-	_cureService.SaveCureData(cureData, function(result){
+	_cureService.GetCureData(function(err, result){
+
+		if(err){
+			console.error(err.stack);
+			res.status(500).send('An error occurred');
+		}
+
+		res.send(JSON.stringify(result));
+	});
+})
+
+//Saves the Cure data from the previous day
+app.post('/cure/yesterday', function(req, res, next){
+	next()
+}, function(req, res, next){
+		_cureService.SaveCureData(cureData, function(err, result){
 		console.log("Mongo response:" + result)
-		process.exit();
-	})
+		res.send(result);
+		next();
+		})
 });
+
+//Generic exception handling
+app.use(function (err, req, res, next){
+	console.error(err.stack);
+	res.status(500).send('An error occurred');
+})

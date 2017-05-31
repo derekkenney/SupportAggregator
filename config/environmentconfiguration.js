@@ -7,25 +7,28 @@ var _env, _config;
 //Returns an environment object
 function EnvironmentConfiguration(){
 
-  		console.log('#########################################Configuration#################################################\n')
+  		console.log('#########################################Environment Configuration#################################################\n')
 
   if("undefined" === typeof _cfEnv){
-    console.log("There is no environment object available.");
-    process.exit();
+    console.error("There is no environment object available.");
+
+    return new Error("There is no environment object available.")
   }
 
   var data = fs.readFileSync('./config/app.toml', 'utf8');
 
   if("undefined" === data){
-    console.log("No config data returned");
-    process.exit();
+    console.error("No config data returned");
+
+    return new Error("No config data returned");
   }
 
   var parsed = toml.parse(data);
 
   if("undefined" === typeof parsed){
-   console.log("Couldn't parse the toml file");
-   proces.exit();
+   console.error("Couldn't parse the toml file");
+
+   return new Error("Couldn't parse the config file");
   }
 
     var vcap = _cfEnv.getAppEnv()
@@ -33,7 +36,6 @@ function EnvironmentConfiguration(){
     //TODO: Temp fix until we can get the CF environment variable for the space
     var spaceName = 'qa'//vcap.space_name
 
-    console.log("Config object: " + _config);
     console.log("Populating the environment object");
     console.log("Application name: " + appName);
     console.log("Space name: " + spaceName);

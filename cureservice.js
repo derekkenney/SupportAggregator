@@ -33,34 +33,31 @@ function CureService(){
 
 CureService.prototype.GetCureData = function(callback) {
 	console.log("Getting Cure data.");
+	_cureDBRepo.Get(function(err, result) {
 
-	_cureDBRepo.Get(function(returnValues) {
+		if(err){
+			callback(err, null)
+		}
+
 		console.log("Cure DB callback function. The results of the query should be available")
-		console.log(returnValues)
-
-		console.log("Make call to main.js callback")
-		callback(returnValues)
+		callback(null, result);
 	});
 }
 
 //create the SaveCureData function accepting a JSON collection, and callback function
 //from the main file.
-CureService.prototype.SaveCureData = function(cureData, callback) {
+CureService.prototype.SaveCureData = function(err, cureData, callback) {
 
 	try {
-		if("undefined" === typeof cureData){
-			console.log("There is no data to be inserted into MongoDB")
-			process.exit();
-		}
-
 		console.log("Saving Cure data into MongoDB")
 		//call insert function of mongorepo
 		_cureMongoDBRepo.InsertDocuments(cureData, function(result){
 			//pass the result returned from the repo to the callback function
-			callback(result)
+			callback(result, null)
 		})
 	} catch (e) {
 			console.log("Cure Service: An error occurred " + e);
+			callback("An error occurred: " + e, null);
 	}
 }
 module.exports = CureService;

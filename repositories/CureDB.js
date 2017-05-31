@@ -5,74 +5,76 @@ const TwentyFourHourQuery = require('./cure24hourquery.js');
 var _TwentyFourHourQuery, _conn;
 
 function CureRepository(config){
-	console.log('Entered the CureRepository constructor');
+	try {
+			console.log('Entered the CureRepository constructor');
 
-	if("undefined" === typeof config){
-		console.console.log("Config object is null. Can't create an instance of the CureDB repo.");
-		process.exit();
+			if("undefined" === typeof config){
+				console.error("Config object is null. Can't create an instance of the CureDB repo.");
+				return new Error("Config object is null. Can't create an instance of the CureDB repo.")
+			}
+			_TwentyFourHourQuery = new TwentyFourHourQuery();
+			_config = config;
+	} catch (e) {
+			console.error("An error occurred in creating an instance of the CureRepo class " + e);
+			return e
 	}
-	_TwentyFourHourQuery = new TwentyFourHourQuery();
-	_config = config;
 }
 
 CureRepository.prototype.Get = function(callback) {
-		console.log('Entering getDataFromCure');
-		console.log("Verifying that we have the needed cure configuration values");
-		console.log("DB server: " + _config.server);
-		console.log("Database:" + _config.db);
-		console.log("Port: " + _config.port);
-		console.log("Username: " + _config.userName);
+	try {
 
-		var rows = [];
-		var config = {
-			user: _config.userName,
-			password: _config.password,
-			server: _config.server,
-			database: _config.db,
-			port: _config.port
-		};
+	console.log('Entering getDataFromCure');
+	console.log("Verifying that we have the needed cure configuration values");
+	console.log("DB server: " + _config.server);
+	console.log("Database:" + _config.db);
+	console.log("Port: " + _config.port);
+	console.log("Username: " + _config.userName);
 
-		sql.connect(config, err => {
+	var rows = [];
+	var config = {
+		user: _config.userName,
+		password: _config.password,
+		server: _config.server,
+		database: _config.db,
+		port: _config.port
+	};
+
+	sql.connect(config, err => {
 			if(err){
 				console.log("An error occurred connecting to sql server " + err);
-				return callback(new Error("An error occurred connecting to sql server " + err))
+				callback(new Error("An error occurred connecting to sql server " + err), null)
 			}
 
 			console.log("Creating a new request");
-		 	const request = new sql.Request()
+		 	const request = new sql.Request();
 			//request.stream = true;
 
 			console.log("Adding query to the request")
 			request.stream = true;
-
-			request.query(_TwentyFourHourQuery.query)
+			request.query(_TwentyFourHourQuery.query);
 
 			request.on('done', () => {
-					console.log("Request is done. Closing SQL connection")
-					sql.close()
-					console.log("rows: " + rows)
-					callback(rows)
-			})
+					console.log("Request is done. Closing SQL connection");
+					sql.close();
+					console.log("rows: " + rows);
+					callback(null, rows);
+			});
 
 			request.on('row', row => {
 				var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate, "TimeStamp" : Date.now()}
 				//Create a JSON object from JS object
 				var json = rowForInsert
-
 				rows.push(json)
-			})
+			});
 
-			 request.on('error', err => {
-				 console.log("An error occurred executing the query " + err)
-				 return callback(new Error("An error occurred executing the query " + err))
-			 })
-		});
-
-		sql.on('error', err => {
-    		if(err) {
-					console.log("An error occurred: " + err)
-					process.exit();
-				}
-		})
+		 request.on('error', err => {
+			 console.error("An error occurred executing the query " + err)
+			 callback(new Error("An error occurred executing the query " + err), null);
+		 });
+	 })
+	 } catch (e) {
+		 console.error("An error occurred " + err)
+		 callback(Error("An error occurred " + err), null);
+ 	}
 }
 module.exports = CureRepository;

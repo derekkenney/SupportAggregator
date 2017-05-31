@@ -9,9 +9,7 @@ function CureMongoDBRepository(config){
   //Get a local instance of the config object to use for the Mongo connection
   if("undefined" === typeof config){
     console.console.log("Config object is null. Can't create an instance of the MongoDB repo.");
-    process.exit();
   }
-
   _config = config
 }
 
@@ -24,7 +22,6 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
 
   if("undefined" === typeof _config.collectionName){
     console.log("Couldn't get the collection name from config object. Exiting program")
-    process.exit()
   }
 
   //create instance of connection object
@@ -36,7 +33,6 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
 
     if("undefined" === typeof data){
       console.log("There are no documents to insert")
-      process.exit();
     }
 
     //call the insertDocuments function
