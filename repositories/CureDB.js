@@ -55,7 +55,7 @@ CureRepository.prototype.Get = function(callback) {
 			})
 
 			request.on('row', row => {
-				var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate}
+				var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate, "TimeStamp" : Date.now()}
 				//Create a JSON object from JS object
 				var json = rowForInsert
 
