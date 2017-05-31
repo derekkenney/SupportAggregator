@@ -31,9 +31,9 @@ function CureService(){
 	_cureMongoDBRepo = new cureMongoDbRepo(_envConfig);
 }
 
-CureService.prototype.GetCureData = function(callback) {
+CureService.prototype.GetCureData = function(options, callback) {
 	console.log("Getting Cure data.");
-	_cureDBRepo.Get(function(err, result) {
+	_cureDBRepo.Get(options, function(err, result) {
 
 		if(err){
 			callback(err, null)

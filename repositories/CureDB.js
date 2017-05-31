@@ -20,7 +20,7 @@ function CureRepository(config){
 	}
 }
 
-CureRepository.prototype.Get = function(callback) {
+CureRepository.prototype.Get = function(options, callback) {
 	try {
 
 	console.log('Entering getDataFromCure');
@@ -51,6 +51,8 @@ CureRepository.prototype.Get = function(callback) {
 
 			console.log("Adding query to the request")
 			request.stream = true;
+
+
 			request.query(_TwentyFourHourQuery.query);
 
 			request.on('done', () => {
