@@ -10,14 +10,4 @@ function TodaysDate(){
   console.log("Today: " + this.today);
 }
 
-function StartDate(startDate){
-  this.startDate = dateFormat(startDate, "isoDateTime");
-}
-
-function EndDate(endDate){
-  this.endDate = dateFormat(endDate, "isoDateTime");
-}
-
 module.exports = TodaysDate;
-module.exports = StartDate;
-module.exports = EndDate;

@@ -1,14 +1,9 @@
-const queryDate = require('../models/queryDate.js');
 const stringify = require('node-stringify');
-var origination;
 
 //TODO Replace this class with a proc once I have access to do so in SQL Server
-function Cure24HourQuery() {
+function Cure24HourQuery(queryDate) {
   console.log("CureQueryFor24Hours constructor");
-
-  _queryDate = new queryDate();
-  console.log("Date to be queiried:" + _queryDate.today);
-
+  console.log("Query date: " + queryDate.today)
   //test date var to validate against known records
   var testDate = '2017-05-01 00:00:00.000';
 

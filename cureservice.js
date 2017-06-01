@@ -3,7 +3,6 @@
  */
 var destinationpath, querysql, sourcePath, sourceTableName, mongoInfo, dbCreds, dbInfo, collectionName;
 var BeginOffSet, EndOffSet, envConfigData, cureConfigData, cdata, appEnv;
-var origination = 2;
 var stack = new Error().stack;
 var ecode = new Error().code;
 const fs = require('fs');
@@ -38,8 +37,6 @@ CureService.prototype.GetCureData = function(options, callback) {
 		if(err){
 			callback(err, null)
 		}
-
-		console.log("Cure DB callback function. The results of the query should be available")
 		callback(null, result);
 	});
 }
