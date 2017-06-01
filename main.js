@@ -6,13 +6,14 @@ var _cureService = new cureService();
 var express = require('express');
 var app = express();
 const Yesterday = require('./models/yesterday.js')
-var optionalArguments = require('./repositories/optionalarguments.js')
+const OptionalArguments = require('./repositories/optionalarguments.js')
 
-app.listen(3000, function(){
-	console.log("Cure data API listening on 3000");
-})
+app.set('port', process.env.PORT || 8080);
 
-//Routes
+app.listen(app.get('port'),  function(){
+	console.log("Cure data API listening on port " + app.get('port'));
+});
+
 //Default
 app.get('/', function(req, res){
 	res.send('index');
@@ -26,11 +27,14 @@ app.get('/cure/:startdate/:enddate', function(req, res, next){
 				var options = {startDate : req.params.startdate, endDate : req.params.enddate}
 
 				//we use an optional arguments object for determining which query object to use
-				var dateArguments = new optionalArguments(options)
+				var optArgs = new OptionalArguments(options);
 
-				if("undefined" === startDate || "undefined" === endDate){
-					next('route');
-				}
+				_cureService.GetCureData(optArgs, function(err, result){
+					if(err){
+						res.status(500).send(err);
+					}
+					res.send(JSON.stringify(result));
+				});
 	});
 
 //Gets the cure data for the previous day
@@ -39,16 +43,19 @@ app.get('/cure/yesterday', function(req, res, next){
 	next()
 }, function(req, res, next){
 
-	//add yesterday to the options object
-	var yesterday = new Yesterday();
-	var options = {yesterday : yesterday.yesterday}
+		//add yesterday to the options object
+		var yesterday = new Yesterday();
+		var options = {yesterday : yesterday.yesterday}
 
-	_cureService.GetCureData(options, function(err, result){
-		if(err){
-			res.status(500).send(err);
-		}
-		res.send(JSON.stringify(result));
-	});
+		//we use an optional arguments object for determining which query object to use
+		var optArgs = new OptionalArguments(options)
+
+		_cureService.GetCureData(optArgs, function(err, result){
+			if(err){
+				res.status(500).send(err);
+			}
+			res.send(JSON.stringify(result));
+		});
 })
 
 //Saves the Cure data from the previous day

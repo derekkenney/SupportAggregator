@@ -3,11 +3,11 @@ var conn = require('tedious').Connection;
 const sql = require('mssql')
 const TwentyFourHourQuery = require('./cure24hourquery.js');
 const DateRangeQuery = require('./daterangequery.js');
-const Today = require('../models/yesterday.js');
+const Yesterday = require('../models/yesterday.js');
 const StartDate = require('../models/startdate.js');
 const EndDate = require('../models/enddate.js');
 
-var _conn;
+var _conn, query;
 
 function CureRepository(config){
 	try {
@@ -22,13 +22,16 @@ function CureRepository(config){
 	}
 }
 
-CureRepository.prototype.Get = function(options, callback) {
+CureRepository.prototype.Get = function(optArgs, callback) {
 		console.log('Entering getDataFromCure');
 		console.log("Verifying that we have the needed cure configuration values");
 		console.log("DB server: " + _config.server);
 		console.log("Database:" + _config.db);
 		console.log("Port: " + _config.port);
 		console.log("Username: " + _config.userName);
+		console.log("Start date: " + optArgs.startDate);
+		console.log("End date: " + optArgs.endDate);
+		console.log("Yesterday: " + optArgs.yesterday)
 
 		var rows = [];
 		var config = {
@@ -36,36 +39,41 @@ CureRepository.prototype.Get = function(options, callback) {
 			password: _config.password,
 			server: _config.server,
 			database: _config.db,
-			port: _config.portF
+			port: _config.port
 		};
 
 		sql.connect(config, err => {
-				console.log("Creating a new request");
-			 	const request = new sql.Request();
-				//request.stream = true;
 
-				console.log("Adding query to the request")
-				request.stream = true;
+				if(err){
+					console.error("An error occurred connecting to sql server " + err)
+					callback(new Error("An error occurred connecting to sql server " + err), null)
+				}
 
 				//Here we determine which query we want to use. Either the 24 hour, or date range
-				if("undefined" === options.startDate || "undefined" === options.endDate){
+				if("nothing" === optArgs.startDate || "nothing" === optArgs.endDate){
 					//create an instance of the 24 hour query
 					//pass in the date dependency
 					console.log("Calling 24 hour query");
-					var today = new Today();
-					var query = new TwentyFourHourQuery(today.today);
 
-					request.query(query.query);
+					//we create an instance of the date object for yesterday.
+					//we use the options to get the date, and then create a today object
+					var yesterday = new Yesterday();
+					query = new TwentyFourHourQuery(yesterday.yesterday);
 				}
-				else{
+
+				if("nothing" !== optArgs.startDate || "nothing" !== optArgs.endDate){
 					console.log("Calling date range query");
 					//get formatted date objects
-					var startDate = new StartDate(options.startDate);
-					var endDate = new EndDate(options.endDate);
-					var query = new DateRangeQuery(startDate.startDate, endDate.endDate);
-
-					request.query(query.query);
+					var startDate = new StartDate(optArgs.startDate);
+					var endDate = new EndDate(optArgs.endDate);
+					query = new DateRangeQuery(startDate.startDate, endDate.endDate);
 				}
+
+				console.log("Adding query to the request")
+
+				const request = new sql.Request();
+				request.stream = true;
+				request.query(query.query);
 
 				request.on('done', () => {
 						console.log("Request is done. Closing SQL connection");
@@ -88,8 +96,8 @@ CureRepository.prototype.Get = function(options, callback) {
 		});
 
 	sql.on('error', err => {
-		console.error("An error occurred connecting to sql server " + err)
-		callback(new Error("An error occurred connecting to sql server " + err), null)
+		console.error("An error occurred " + err)
+		callback(new Error("An error occurred " + err), null)
 	});
 }
 module.exports = CureRepository;

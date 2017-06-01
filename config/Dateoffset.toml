@@ -1,6 +1,0 @@
-#EndDayOffSet should be calculated from BegindayOffSet. When offset by 2 days(-2) 
-#if endDayOffSet is today then it should be (2).
-#Make them equal to have date from one day only. 
-
-BeginDayOffSet = 1
-EndDayOffSet = 1
