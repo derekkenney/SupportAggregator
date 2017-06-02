@@ -64,6 +64,7 @@ var insertDocuments = function(db, data, callbackExternal){
       //callback is a default callback of the async each function. Not to be confused with your own callback
       console.log("Entered async insert loop")
 
+      var i = 0;
       async.each(data, function(item, callback){
         if("undefined" !== typeof item.CureID) {
             console.log("Data to be upserted " + item.CureID);
@@ -72,6 +73,8 @@ var insertDocuments = function(db, data, callbackExternal){
             var dt = dateTime.create();
             var formatted = dt.format('Y-m-d H:M:S');
 
+            //incrementer for number of records inserted
+            i++
             collection.createIndex({CureID : 1});
 
             collection.update({CureID: item.CureID},
@@ -96,7 +99,7 @@ var insertDocuments = function(db, data, callbackExternal){
           if(err){
             callbackExternal(err, null);
           } else {
-            callbackExternal(null, "Inserts completed");
+            callbackExternal(null, "Number of records inserted: " + i);
           }
         }
       )

@@ -36,7 +36,8 @@ CureService.prototype.GetCureData = function(optArgs, callback) {
 		if(err){
 			callback(err, null)
 		}
-
+		//We aren't mapping to a DTO before returning to the response. The collection can have different
+		//documents. If this becomes a requirement, we will add mapping later.
 		callback(null, result);
 	});
 }
