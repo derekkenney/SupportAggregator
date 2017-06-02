@@ -4,9 +4,12 @@ var http = require('http');
 var cureService = require('./cureservice.js');
 var _cureService = new cureService();
 var express = require('express');
-var app = express();
 const Yesterday = require('./models/yesterday.js')
 const OptionalArguments = require('./repositories/optionalarguments.js')
+var bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
+
+var app = express();
 
 app.set('port', process.env.PORT || 8080);
 
@@ -61,15 +64,21 @@ app.get('/cure/yesterday', function(req, res, next){
 })
 
 //Saves the Cure data from the previous day
-app.post('/cure/yesterday', function(req, res, next){
-		console.log("Route for posting cure data");
-	next()
-}, function(req, res, next){
-		_cureService.SaveCureData(cureData, function(err, result){
+app.post('/cure/tickets', jsonParser, function(req, res){
+	console.log("Route for posting cure data");
+
+	if(!req.body) return res.sendStatus(400);
+
+	_cureService.SaveCureData(req.body, function(err, result){
+
+		if(err){
+			console.error(err);
+			res.status(500).send(err)
+		}
+
 		console.log("Mongo response:" + result)
-		res.send(result);
-		next();
-		})
+		res.status(200).send(result)
+	});
 });
 
 //Generic exception handling

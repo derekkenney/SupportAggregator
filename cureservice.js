@@ -43,14 +43,14 @@ CureService.prototype.GetCureData = function(optArgs, callback) {
 
 //create the SaveCureData function accepting a JSON collection, and callback function
 //from the main file.
-CureService.prototype.SaveCureData = function(err, cureData, callback) {
+CureService.prototype.SaveCureData = function(cureData, callback) {
 
 	try {
 		console.log("Saving Cure data into MongoDB")
 		//call insert function of mongorepo
-		_cureMongoDBRepo.InsertDocuments(cureData, function(result){
+		_cureMongoDBRepo.InsertDocuments(cureData, function(err, result){
 			//pass the result returned from the repo to the callback function
-			callback(result, null)
+			callback(err, result)
 		})
 	} catch (e) {
 			console.log("Cure Service: An error occurred " + e);
