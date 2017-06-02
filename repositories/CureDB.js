@@ -50,18 +50,16 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 				}
 
 				//Here we determine which query we want to use. Either the 24 hour, or date range
-				if("nothing" === optArgs.startDate || "nothing" === optArgs.endDate){
+				if('undefined' !== typeof optArgs.yesterday){
 					//create an instance of the 24 hour query
 					//pass in the date dependency
 					console.log("Calling 24 hour query");
+					console.log("Yesterday before creating query: " + optArgs.yesterday);
 
-					//we create an instance of the date object for yesterday.
-					//we use the options to get the date, and then create a today object
-					var yesterday = new Yesterday();
-					query = new TwentyFourHourQuery(yesterday.yesterday);
+					query = new TwentyFourHourQuery(optArgs.yesterday);
 				}
 
-				if("nothing" !== optArgs.startDate || "nothing" !== optArgs.endDate){
+				if('undefined' !== typeof optArgs.startDate && 'undefined' !== typeof optArgs.endDate){
 					console.log("Calling date range query");
 					//get formatted date objects
 					var startDate = new StartDate(optArgs.startDate);
@@ -78,7 +76,6 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 				request.on('done', () => {
 						console.log("Request is done. Closing SQL connection");
 						sql.close();
-						console.log("rows: " + rows);
 						callback(null, rows);
 				});
 

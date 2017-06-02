@@ -31,12 +31,12 @@ function CureService(){
 }
 
 CureService.prototype.GetCureData = function(optArgs, callback) {
-	console.log("Getting Cure data.");
 	_cureDBRepo.Get(optArgs, function(err, result) {
 
 		if(err){
 			callback(err, null)
 		}
+
 		callback(null, result);
 	});
 }

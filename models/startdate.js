@@ -3,8 +3,14 @@ var dateTime = require('node-datetime');
 
 function StartDate(startDate){
   console.log("Creating start date object");
-  this.startDate = dateFormat(startDate, "isoDateTime");
-  console.log("Start date: " + this.startDate);
+  console.log("Constructor argument for start date: " + startDate);
+
+  if('undefined' !== typeof startDate){
+    this.startDate = dateFormat(startDate, "yyyy-mm-dd HH:MM:ss");
+    console.log("Start date: " + this.startDate);
+  } else {
+    this.startDate = 'undefined';
+  }
 }
 
 module.exports = StartDate;

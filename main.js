@@ -24,7 +24,7 @@ app.get('/cure/:startdate/:enddate', function(req, res, next){
 	console.log("Route for getting cure data by date range");
 	next()
 	}, function(req, res, next){
-				var options = {startDate : req.params.startdate, endDate : req.params.enddate}
+				var options = {startDate : req.params.startdate + " 00:00.000", endDate : req.params.enddate + " 00:00:000"}
 
 				//we use an optional arguments object for determining which query object to use
 				var optArgs = new OptionalArguments(options);
@@ -43,7 +43,9 @@ app.get('/cure/yesterday', function(req, res, next){
 	next()
 }, function(req, res, next){
 
-		//add yesterday to the options object
+		//Yesterday doesn't take any parameters from the request.
+		//We create a new instance of the yesterday object, add it to the options,
+		//and pass to the query.
 		var yesterday = new Yesterday();
 		var options = {yesterday : yesterday.yesterday}
 
