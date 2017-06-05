@@ -1,8 +1,8 @@
 {
-  "name": "DataDump",
+  "name": "CureData",
   "version": "1.0.0",
   "description": "Taking data from Cure BD and Ad and dumping it into CS Mongodb",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
   },

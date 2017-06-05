@@ -4,7 +4,7 @@ applications:
   buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git
   domain: g3.app.cloud.comcast.net
   host: curedata
-  command: node main.js
+  command: node app.js
   instances: 1
   memory: 2GB
   disk_quota: 2GB
