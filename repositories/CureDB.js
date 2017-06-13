@@ -47,7 +47,8 @@ CureRepository.prototype.Get = function(optArgs, callback) {
     	}
 		};
 
-		//TODO: Refactor into more granular repo classes.
+		//TODO: Refactor into more granular repo classes. From the request, we should know which repo instance to use
+		//The if statements below are a code smell
 		//Here we determine which query we want to use. Either the 24 hour, or date range
 		if("undefined" !== typeof optArgs.yesterday){
 			//create an instance of the 24 hour query
@@ -56,7 +57,7 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 			query = new TwentyFourHourQuery(optArgs.yesterday);
 		}
 
-		if("undefined" !== typeof optArgs.startDate && "undefined" !==   typeof optArgs.endDate){
+		if("undefined" !== typeof optArgs.startDate && "undefined" !== typeof optArgs.endDate){
 			console.log("Creating date range query");
 			//get formatted date objects
 			var startDate = new StartDate(optArgs.startDate);
