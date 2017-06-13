@@ -39,10 +39,15 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 			password: _config.password,
 			server: _config.server,
 			database: _config.db,
-			port: _config.port
+			port: _config.port,
+			pool: {
+        max: 20,
+        min: 0,
+        idleTimeoutMillis: 30000
+    }
 		};
 
-		sql.connect(config, err => {
+		const pool = new sql.ConnectionPool(config, err => {
 
 				if(err){
 					console.error("An error occurred connecting to sql server " + err)
@@ -59,7 +64,7 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 					query = new TwentyFourHourQuery(optArgs.yesterday);
 				}
 
-				if('undefined' !== typeof optArgs.startDate && 'undefined' !== typeof optArgs.endDate){
+				if("undefined" !== optArgs.startDate && "undefined" !== optArgs.endDate){
 					console.log("Calling date range query");
 					//get formatted date objects
 					var startDate = new StartDate(optArgs.startDate);
@@ -69,18 +74,20 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 
 				console.log("Adding query to the request")
 
-				const request = new sql.Request();
+				const request = new sql.Request(pool);
 				request.stream = true;
 				request.query(query.query);
 
 				request.on('done', () => {
 						console.log("Request is done. Closing SQL connection");
-						sql.close();
+						console.log("rows: " + rows);
+						pool.close();
 						callback(null, rows);
 				});
 
 				request.on('row', row => {
-					var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate}
+					console.log("New data row")
+					var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate, "TimeStamp" : Date.now()}
 					//Create a JSON object from JS object
 					var json = rowForInsert
 					rows.push(json)
@@ -88,13 +95,17 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 
 			 request.on('error', err => {
 				 console.error("An error making a request to DB " + err)
+				 pool.close();
 				 callback(new Error("An error making a request to DB " + err), null)
 			 });
 		});
 
-	sql.on('error', err => {
+	pool.on('error', err => {
 		console.error("An error occurred " + err)
+		pool.close();
 		callback(new Error("An error occurred " + err), null)
 	});
+
+
 }
 module.exports = CureRepository;
