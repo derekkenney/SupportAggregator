@@ -44,8 +44,25 @@ CureRepository.prototype.Get = function(optArgs, callback) {
         max: 20,
         min: 0,
         idleTimeoutMillis: 30000
-    }
+    	}
 		};
+
+		//TODO: Refactor into more granular repo classes.
+		//Here we determine which query we want to use. Either the 24 hour, or date range
+		if("undefined" !== typeof optArgs.yesterday){
+			//create an instance of the 24 hour query
+			//pass in the date dependency
+			console.log("Creating yesterday query");
+			query = new TwentyFourHourQuery(optArgs.yesterday);
+		}
+
+		if("undefined" !== typeof optArgs.startDate && "undefined" !==   typeof optArgs.endDate){
+			console.log("Creating date range query");
+			//get formatted date objects
+			var startDate = new StartDate(optArgs.startDate);
+			var endDate = new EndDate(optArgs.endDate);
+			query = new DateRangeQuery(startDate.startDate, endDate.endDate);
+		}
 
 		const pool = new sql.ConnectionPool(config, err => {
 
@@ -54,28 +71,11 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 					callback(new Error("An error occurred connecting to sql server " + err), null)
 				}
 
-				//Here we determine which query we want to use. Either the 24 hour, or date range
-				if('undefined' !== typeof optArgs.yesterday){
-					//create an instance of the 24 hour query
-					//pass in the date dependency
-					console.log("Calling 24 hour query");
-					console.log("Yesterday before creating query: " + optArgs.yesterday);
-
-					query = new TwentyFourHourQuery(optArgs.yesterday);
-				}
-
-				if("undefined" !== optArgs.startDate && "undefined" !== optArgs.endDate){
-					console.log("Calling date range query");
-					//get formatted date objects
-					var startDate = new StartDate(optArgs.startDate);
-					var endDate = new EndDate(optArgs.endDate);
-					query = new DateRangeQuery(startDate.startDate, endDate.endDate);
-				}
-
 				console.log("Adding query to the request")
 
 				const request = new sql.Request(pool);
 				request.stream = true;
+
 				request.query(query.query);
 
 				request.on('done', () => {
@@ -86,7 +86,6 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 				});
 
 				request.on('row', row => {
-					console.log("New data row")
 					var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate, "TimeStamp" : Date.now()}
 					//Create a JSON object from JS object
 					var json = rowForInsert
