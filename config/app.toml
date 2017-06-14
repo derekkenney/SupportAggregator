@@ -2,7 +2,7 @@
 connection_max = "100"
 enabled = "true"
 db = "53f51b0d-63ab-46d1-b941-d8d8d767e07a"
-collectionName = "tickets"
+collectionName = "curetickets"
 dbServiceName = "mongodb"
 userName = "5eba60e2-e53e-42de-99fe-56d09bded801"
 password = "0fa6a586710f8ecb5687252f9df18811"

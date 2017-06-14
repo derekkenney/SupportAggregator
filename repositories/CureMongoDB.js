@@ -41,7 +41,6 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
 
     //call the insertDocuments function
     insertDocuments(db, data, function(err, result){
-      console.log("Closing connection to Mongo server")
       callback(err, result)
     })
   })
@@ -61,11 +60,15 @@ var insertDocuments = function(db, data, callbackExternal){
 
       var collection = db.collection(_config.collectionName);
 
-      //callback is a default callback of the async each function. Not to be confused with your own callback
-      console.log("Entered async insert loop")
+      //make sure that the JSON is correctly formatted for multiple documents
+      console.log("formatted JSON: " + JSON.stringify(data));
 
       var i = 0;
       async.each(data, function(item, callback){
+
+        //callback is a default callback of the async each function. Not to be confused with your own callback
+        console.log("Entered async insert loop" + i);
+
         if("undefined" !== typeof item.CureID) {
             console.log("Data to be upserted " + item.CureID);
 
@@ -99,6 +102,8 @@ var insertDocuments = function(db, data, callbackExternal){
           if(err){
             callbackExternal(err, null);
           } else {
+            console.log("Closing connection to Mongo server")
+            db.close()
             callbackExternal(null, "Number of records inserted: " + i);
           }
         }
