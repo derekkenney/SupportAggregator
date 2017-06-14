@@ -1,8 +1,8 @@
-[[qa]
+[qa]
 connection_max = "100"
 enabled = "true"
 db = "d995ad7e-c94c-4d90-b35e-d503fe54ab7d"
-collectionName = "appdirecttickets"
+collectionName = "curetickets"
 dbServiceName = "mongodb"
 userName = "d99b00c0-5d19-44f8-84bb-53cf99adbeca"
 password = "2fab9613ac854a20abc30224536ba5db"
