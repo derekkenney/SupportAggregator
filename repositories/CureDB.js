@@ -87,7 +87,19 @@ CureRepository.prototype.Get = function(optArgs, callback) {
 				});
 
 				request.on('row', row => {
-					var rowForInsert = {"CureID" : row.ID,  "SubmissionDate" : row.FO_SubmissionDate, "Severity" : row.FO_Severity , "ResolutionDate" : row.EndDate, "TimeStamp" : Date.now()}
+					//Modify to save more of the results
+					var rowForInsert = {"CureID" : row.ID,
+					"SubmissionDate" : row.FO_SubmissionDate,
+					"Severity" : row.FO_Severity,
+					"ResolutionDate" : row.EndDate,
+					"TimeStamp" : Date.now(),
+					"RemedyTicketNo" : row.FO_RemedyTicketNo,
+					"SubmitterName" : row.To_SubmitterName,
+					"DefectType" : row.MD_DefectType,
+					"Product" : row.ID_Product,
+					"TypeOfIssue" : row.ID_TypeOfIssue,
+					"SLA" : row.MD_SLA
+				}
 					//Create a JSON object from JS object
 					var json = rowForInsert
 					rows.push(json)
