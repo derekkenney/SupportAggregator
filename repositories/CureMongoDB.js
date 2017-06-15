@@ -81,7 +81,9 @@ var insertDocuments = function(db, data, callbackExternal){
             collection.createIndex({CureID : 1});
 
             collection.update({CureID: item.CureID},
-              {CureID: item.CureID, SubmissionDate : item.SubmissionDate, Severity : item.Severity, ResolutionDate : item.ResolutionDate, TimeStamp : formatted},
+              {CureID: item.CureID, SubmissionDate : item.SubmissionDate, Severity : item.Severity, ResolutionDate : item.ResolutionDate, TimeStamp : formatted,
+                RemedyTicketNo: item.RemedyTicketNo, SubmitterName: item.SubmitterName, DefectType: item.DefectType, Product: item.Product, TypeOfIssue: item.TypeOfIssue,
+                SLA: item.SLA},
               { upsert: true },
               function(err, doc){
                 if(err){
