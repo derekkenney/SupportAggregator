@@ -7,11 +7,12 @@ var stack = new Error().stack;
 var ecode = new Error().code;
 const fs = require('fs');
 const cureDBRepo = require("./repositories/CureDB.js");
+const fiscalMonth = require("./models/fiscalmonth.js")
 const cureMongoDbRepo = require("./repositories/CureMongoDB.js");
 const cfEnv = require('cfenv');
 const envConf = require('./config/environmentconfiguration.js');
 const cureConf = require('./config/cureconfiguration.js');
-var _cureDBRepo, _cureMongoDBRepo;
+var _cureDBRepo, _cureMongoDBRepo, _fiscalMonth;
 
 function CureService(){
 	console.log("Entered CureService constructor.");
@@ -28,6 +29,9 @@ function CureService(){
 	//create repo objects to be used in the service. pass config objects into constructor
 	_cureDBRepo = new cureDBRepo(_cureConfig);
 	_cureMongoDBRepo = new cureMongoDbRepo(_envConfig);
+
+	_fiscalMonth = new fiscalMonth();
+
 }
 
 CureService.prototype.GetCureData = function(optArgs, callback) {
@@ -45,11 +49,10 @@ CureService.prototype.GetCureData = function(optArgs, callback) {
 //create the SaveCureData function accepting a JSON collection, and callback function
 //from the main file.
 CureService.prototype.SaveCureData = function(cureData, callback) {
-
 	try {
 		console.log("Saving Cure data into MongoDB")
 		//call insert function of mongorepo
-		_cureMongoDBRepo.InsertDocuments(cureData, function(err, result){
+		_cureMongoDBRepo.InsertDocuments(cureData, _fiscalMonth, function(err, result){
 			//pass the result returned from the repo to the callback function
 			callback(err, result)
 		})

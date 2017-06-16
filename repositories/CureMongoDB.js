@@ -16,7 +16,7 @@ function CureMongoDBRepository(config){
 }
 
 //Returns a db object for accessing collection
-CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
+CureMongoDBRepository.prototype.InsertDocuments = function(data, fiscalMonth, callback){
   console.log('\n#########################################Inserting Documents#################################################\n')
 
   //get the collection
@@ -40,7 +40,7 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
     }
 
     //call the insertDocuments function
-    insertDocuments(db, data, function(err, result){
+    insertDocuments(db, fiscalMonth, data, function(err, result){
       callback(err, result)
     })
   })
@@ -48,7 +48,7 @@ CureMongoDBRepository.prototype.InsertDocuments = function(data, callback){
 
 //a function with a callback has its own logic, as well as calling the logic in the
 //callback
-var insertDocuments = function(db, data, callbackExternal){
+var insertDocuments = function(db, fiscalMonth, data, callbackExternal){
     try {
       //insert into the collection
       //get the collectionName
@@ -61,13 +61,24 @@ var insertDocuments = function(db, data, callbackExternal){
       var collection = db.collection(_config.collectionName);
 
       //make sure that the JSON is correctly formatted for multiple documents
-      console.log("formatted JSON: " + JSON.stringify(data));
+      console.log("Formatted JSON: " + JSON.stringify(data));
 
       var i = 0;
       async.each(data, function(item, callback){
 
         //callback is a default callback of the async each function. Not to be confused with your own callback
         console.log("Entered async insert loop" + i);
+
+        //Get the fiscal month
+        fiscalMonth.GetFiscalMonth(item.SubmissionDate,  function(err, result){
+          if(err) {
+            console.error(err)
+          }
+
+          if("undefined" !== typeof result){
+            fiscalMonth = result;
+          }
+        });
 
         if("undefined" !== typeof item.CureID) {
             console.log("Data to be upserted " + item.CureID);
@@ -83,11 +94,11 @@ var insertDocuments = function(db, data, callbackExternal){
             collection.update({CureID: item.CureID},
               {CureID: item.CureID, SubmissionDate : item.SubmissionDate, Severity : item.Severity, ResolutionDate : item.ResolutionDate, TimeStamp : formatted,
                 RemedyTicketNo: item.RemedyTicketNo, SubmitterName: item.SubmitterName, DefectType: item.DefectType, Product: item.Product, TypeOfIssue: item.TypeOfIssue,
-                SLA: item.SLA},
+                SLA: item.SLA, FiscalMonth: fiscalMonth},
               { upsert: true },
               function(err, doc){
                 if(err){
-                  console.log("An error occurred inserting doc");
+                  console.error("An error occurred inserting doc: " + err);
                 }
                 else{
                     console.log("Record upserted")
