@@ -67,7 +67,7 @@ var insertDocuments = function(db, fiscalMonth, data, callbackExternal){
       async.each(data, function(item, callback){
 
         //callback is a default callback of the async each function. Not to be confused with your own callback
-        console.log("Entered async insert loop" + i);
+        console.log("Entered async insert loop: " + i);
 
         //Get the fiscal month
         fiscalMonth.GetFiscalMonth(item.SubmissionDate,  function(err, result){
@@ -75,7 +75,8 @@ var insertDocuments = function(db, fiscalMonth, data, callbackExternal){
             console.error(err)
           }
 
-          if("undefined" !== typeof result){
+          if("undefined" === typeof err){
+            console.log("Fiscal month: " + result)
             fiscalMonth = result;
           }
         });
