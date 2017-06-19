@@ -12,30 +12,28 @@ FiscalMonth.prototype.GetFiscalMonth = function(submissionDate, callback){
     var arr = submissionDate.split("-")
 
     //create an array of month values
-    var months = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"]
+    var months = ["01", "02", "03", "04", "05",
+    "06", "07", "08", "09", "10", "11"]
 
     //now take the second position of the array for the month
     //This only works if the date is in the format YYYY-MM-DD
     var currentYear = parseInt(arr[0],10)
     var currentMonth = parseInt(arr[1],10)
     var day = 21
+    var lower = new Date(currentYear, currentMonth - 1, day, 00, 00, 000)
+    var upper = new Date(currentYear, currentMonth, day, 00, 00, 000)
 
-    console.log("Date values: " + currentYear + "/" + currentMonth)
+    console.log("Fiscal lower:" + lower)
+    console.log("Fiscal upper: " + upper)
 
-    var lower = new Date();
-    var upper = new Date();
-
-    if(submissionDate >= lower.setFullYear(currentYear, currentMonth, day) && submissionDate <= upper.setFullYear(currentYear, currentMonth + 1, day))
+    //the submission date, lower, and upper have to be in ISO format
+    if(submissionDate >= lower)
     {
-        fiscalMonth = currentMonth + 1
+        fiscalMonth = upper
     }
     else {
-      fiscalMonth = currentMonth
+      fiscalMonth = lower
     }
-    console.log("Fiscal lower:" + lower)
-    console.log("Fiscal month:" + fiscalMonth)
-    console.log("Fiscal upper: " + upper)
 
     return callback(null, fiscalMonth)
   }

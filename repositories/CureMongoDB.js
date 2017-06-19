@@ -68,49 +68,47 @@ var insertDocuments = function(db, fiscalMonth, data, callbackExternal){
 
         //callback is a default callback of the async each function. Not to be confused with your own callback
         console.log("Entered async insert loop: " + i);
-
         //Get the fiscal month
         fiscalMonth.GetFiscalMonth(item.SubmissionDate,  function(err, result){
-          if(err) {
-            console.error(err)
+          if(err){
+            console.log(err)
+            callback(err, nil)
           }
+          else{
+            console.log("Fiscal month result: " + result)
 
-          if("undefined" === typeof err){
-            console.log("Fiscal month: " + result)
-            fiscalMonth = result;
+            if("undefined" !== typeof item.CureID) {
+                console.log("Data to be upserted " + item.CureID);
+
+                var dateTime = require('node-datetime');
+                var dt = dateTime.create();
+                var formatted = dt.format('Y-m-d H:M:S');
+
+                //incrementer for number of records inserted
+                i++
+                collection.createIndex({CureID : 1});
+
+                collection.update({CureID: item.CureID},
+                  {CureID: item.CureID, SubmissionDate : item.SubmissionDate, Severity : item.Severity, ResolutionDate : item.ResolutionDate, TimeStamp : formatted,
+                    RemedyTicketNo: item.RemedyTicketNo, SubmitterName: item.SubmitterName, DefectType: item.DefectType, Product: item.Product, TypeOfIssue: item.TypeOfIssue,
+                    SLA: item.SLA, FiscalMonth: result},
+                  { upsert: true },
+                  function(err, doc){
+                    if(err){
+                      console.error("An error occurred inserting doc: " + err);
+                    }
+                    else{
+                        console.log("Record upserted")
+                        callback();
+                    }
+                  }
+                );
+             } else {
+                console.log("Missing Cure ID");
+                callback();
+             }
           }
-        });
-
-        if("undefined" !== typeof item.CureID) {
-            console.log("Data to be upserted " + item.CureID);
-
-            var dateTime = require('node-datetime');
-            var dt = dateTime.create();
-            var formatted = dt.format('Y-m-d H:M:S');
-
-            //incrementer for number of records inserted
-            i++
-            collection.createIndex({CureID : 1});
-
-            collection.update({CureID: item.CureID},
-              {CureID: item.CureID, SubmissionDate : item.SubmissionDate, Severity : item.Severity, ResolutionDate : item.ResolutionDate, TimeStamp : formatted,
-                RemedyTicketNo: item.RemedyTicketNo, SubmitterName: item.SubmitterName, DefectType: item.DefectType, Product: item.Product, TypeOfIssue: item.TypeOfIssue,
-                SLA: item.SLA, FiscalMonth: fiscalMonth},
-              { upsert: true },
-              function(err, doc){
-                if(err){
-                  console.error("An error occurred inserting doc: " + err);
-                }
-                else{
-                    console.log("Record upserted")
-                    callback();
-                }
-              }
-            );
-         } else {
-            console.log("Missing Cure ID");
-            callback();
-         }
+      });
        }, function(err){
           //call the callback that is outside of the async loop
           if(err){
