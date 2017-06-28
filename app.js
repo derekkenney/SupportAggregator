@@ -64,7 +64,7 @@ app.get('/cure/yesterday', function(req, res, next){
 })
 
 //Saves the Cure data from the previous day
-app.post('/ticket', jsonParser, function(req, res){
+app.post('/cure/ticket', jsonParser, function(req, res){
 	console.log("Route for posting cure data");
 
 	if(!req.body) return res.sendStatus(400);
