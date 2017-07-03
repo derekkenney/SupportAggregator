@@ -10,5 +10,3 @@ applications:
   disk_quota: 2GB
   no-route: false
   health-check-type: none
-  services:
-   - mongodb
