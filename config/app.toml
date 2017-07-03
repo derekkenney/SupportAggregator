@@ -1,13 +1,13 @@
 [qa]
 connection_max = "100"
 enabled = "true"
-db = "d995ad7e-c94c-4d90-b35e-d503fe54ab7d"
-collectionName = "curetickets"
+db = "a31836de-4f8e-4cc8-b8f3-f429b256fa8f"
+collectionName = "tickets"
 dbServiceName = "mongodb"
-userName = "d99b00c0-5d19-44f8-84bb-53cf99adbeca"
-password = "2fab9613ac854a20abc30224536ba5db"
+userName = "c8509889-1b08-4136-872c-9805fc2ca6b8"
+password = "70b1ff24b6eb19888dc920edbc35c3c6"
 server = "172.24.68.198"
-uri = "mongodb://d99b00c0-5d19-44f8-84bb-53cf99adbeca:2fab9613ac854a20abc30224536ba5db@172.24.68.198:27017/d995ad7e-c94c-4d90-b35e-d503fe54ab7d"
+uri = "mongodb://c8509889-1b08-4136-872c-9805fc2ca6b8:70b1ff24b6eb19888dc920edbc35c3c6@172.24.68.198:27017/a31836de-4f8e-4cc8-b8f3-f429b256fa8f"
 port = "27017"
 
 [staging]
