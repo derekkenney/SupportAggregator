@@ -10,17 +10,16 @@ server = "172.24.68.198"
 uri = "mongodb://c8509889-1b08-4136-872c-9805fc2ca6b8:70b1ff24b6eb19888dc920edbc35c3c6@172.24.68.198:27017/a31836de-4f8e-4cc8-b8f3-f429b256fa8f"
 port = "27017"
 
-[staging]
-connection_max = "200"
-enabled = "true"
-dbServiceName = "mongodb"
-
 [production]
 connection_max = "5000"
 enabled = "true"
+db ="442d032b-b605-409f-93a6-c7c8095c42de"
+collectionName = "tickets"
 dbServiceName = "mongodb"
-uri = "mongodb://5eba60e2-e53e-42de-99fe-56d09bded801:0fa6a586710f8ecb5687252f9df18811@10.54.141.53:27017/53f51b0d-63ab-46d1-b941-d8d8d767e07a"
-
+userName = "ac03b35a-83f8-4bd3-bc54-72abe5519d17"
+password = "c956b6add22e02717eb0fd3fc890664b"
+server = "172.24.68.198"
+uri = "mongodb://ac03b35a-83f8-4bd3-bc54-72abe5519d17:c956b6add22e02717eb0fd3fc890664b@172.24.68.198:27017/442d032b-b605-409f-93a6-c7c8095c42de"
 
 [local]
 server = "127.0.0.1"
