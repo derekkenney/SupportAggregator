@@ -6,7 +6,7 @@ applications:
   host: curedata
   command: node app.js
   instances: 1
-  memory: 2GB
-  disk_quota: 2GB
+  memory: 256MB
+  disk_quota: 256MB
   no-route: false
   health-check-type: none

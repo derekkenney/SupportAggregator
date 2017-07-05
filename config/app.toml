@@ -10,7 +10,7 @@ server = "172.24.68.198"
 uri = "mongodb://c8509889-1b08-4136-872c-9805fc2ca6b8:70b1ff24b6eb19888dc920edbc35c3c6@172.24.68.198:27017/a31836de-4f8e-4cc8-b8f3-f429b256fa8f"
 port = "27017"
 
-[production]
+[prod]
 connection_max = "5000"
 enabled = "true"
 db ="442d032b-b605-409f-93a6-c7c8095c42de"
