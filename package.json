@@ -1,5 +1,5 @@
 {
-  "name": "CureData",
+  "name": "SupportAggregator",
   "version": "1.0.0",
   "description": "Aggregation of multiple support data sources into a single service.",
   "main": "app.js",
