@@ -1,6 +1,8 @@
 secret-cure-config.json
 SQLQuery.txt
 test.js
+package.lock.json
+node_modules
 
 # TOML Configs
 *.app.toml
