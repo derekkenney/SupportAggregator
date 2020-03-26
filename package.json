@@ -1,19 +1,16 @@
 {
-  "name": "CureData",
+  "name": "SupportAggregator",
   "version": "1.0.0",
-  "description": "Taking data from Cure BD and Ad and dumping it into CS Mongodb",
+  "description": "Aggregation of multiple support data sources into a single service.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
   },
   "repository": "",
   "keywords": [
-    "node.js",
-    "eclipse",
-    "nodeclipse"
+    "node.js"
   ],
-  "author": "Kwami Occansey",
-  "license": "Comcast",
+  "author": "Derek Kenney",
   "readmeFilename": "README.md",
   "dependencies": {
     "async": "^2.4.1",
